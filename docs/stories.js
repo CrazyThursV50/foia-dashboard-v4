@@ -339,8 +339,8 @@ function storyPlaceholder(kicker) {
     if (!card.querySelector(".fd-guide")) (qh.closest(".card-body") || card).insertAdjacentHTML("beforeend", GUIDE);
     const qn = qh.querySelector(".qnum");
     if (!qn || qn.textContent.trim() !== "Federal FOIA Dashboard") return;   // only the start page; question headers stay as they are
-    qh.innerHTML = `<span class="qnum">Federal FOIA Dashboard</span> How federal agencies handle FOIA requests, from their own annual reports.
-      <div class="sel">FY2008–FY2025 · agencies and their components · data from foia.gov. Start with a storyline below, or pick a question on the left.</div>
+    qh.innerHTML = `<span class="qnum">Federal FOIA Dashboard</span>
+      <div class="fd-sub">How federal agencies handle FOIA requests, from their own annual reports.</div>
       <div class="fd-open"><button type="button" class="fd-link">How to use this dashboard ↗</button></div>`;
     qh.querySelector(".fd-link").addEventListener("click", () => openGuide(card));
   }

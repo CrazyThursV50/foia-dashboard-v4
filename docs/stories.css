@@ -174,3 +174,4 @@ html.s1m-open, html.s1m-open body { overflow: hidden; }
 .tl-y:hover { background: #cfe0f4; }
 .tl-y.on { background: #78b7e2; color: #12233b; }
 .tl-y.anchor { background: #4582CC; color: #fff; }
+.fd-sub { margin-top: 0.2rem; }
