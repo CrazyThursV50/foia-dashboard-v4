@@ -124,3 +124,5 @@ html.s1m-open, html.s1m-open body { overflow: hidden; }
 .s1m-view.more .s1m-more { opacity: 1; }
 .s1m-more { right: auto; width: calc(2.6rem + (100% - 8.2rem) * 5 / 12); }   /* only over the text column */
 @media (max-width: 1000px) { .s1m-more { width: 100%; } }
+.s1m-ex + .s1m-ex { margin-top: -0.4rem; }
+.s1m-dot { width: 30px; }
