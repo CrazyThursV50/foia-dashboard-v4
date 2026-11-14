@@ -294,3 +294,57 @@ function storyPlaceholder(kicker) {
   function close() { modal.hidden = true; document.documentElement.classList.remove("s1m-open"); if (opener && opener.isConnected) opener.focus() }
   window.openS1Walk = open;
 })();
+
+/* ---------- Start-page header and the user guide (sample, branch exploring-storyline-display, 2026-11-14) ----------
+   The header card's text is rewritten on the start page, with a third line that opens the guide. The guide sits in the same
+   card, outside the part the dashboard redraws, and shows only when the card is expanded (Quarto's full-screen card). */
+(function () {
+  const GUIDE = `<div class="fd-guide" role="region" aria-label="How to use this dashboard">
+    <h2>How to use this dashboard</h2>
+    <div class="fd-cols">
+      <section><h3>What this is</h3>
+        <p>Every federal agency files an annual FOIA report. This dashboard puts the reports for FY2008–FY2025 side by side, for agencies
+        and for their components: offices inside an agency, such as ICE inside DHS.</p>
+        <p>Data: foia.gov annual reports, built 2026-11-02.</p>
+        <h3>Three ways in</h3>
+        <ol><li><b>Storylines</b>, on the start page: findings checked across all the years. “How we got here” on a card walks through each step.</li>
+          <li><b>Questions 1–6</b>, on the left: Requests received &amp; processed · Response time · Backlog, staff &amp; cost · Outcomes &amp; exemptions · Appeals · Backlog vs intake. Each opens a chart.</li>
+          <li><b>Explore all data</b>: any measure in the reports. Choose a Data type, then a Measure.</li></ol>
+        <p class="fd-small">Click a selected item again to clear it.</p></section>
+      <section><h3>Choosing what you see</h3>
+        <dl><dt>Agency</dt><dd>“All agencies (government total)”, or one agency.</dd>
+          <dt>Component</dt><dd>An office inside the agency you picked.</dd>
+          <dt>Fiscal years</dt><dd>A range of years. One-year views (distribution, exemptions, tables) use the last year.</dd>
+          <dt>Compare with (up to 5)</dt><dd>Adds agencies or components to the same chart; × removes one.</dd>
+          <dt>Agencies added up in the total</dt><dd>All reporting agencies (71–122 a year), or only the 70 that reported all 18 years, so a total does not grow just because more agencies report.</dd></dl>
+        <p>With an agency chosen and no question, the page shows an <b>Overview</b>: the key measure of each question. Each question has three tabs:
+          <b>Chart</b>, <b>Tables</b> (the numbers in the chart, related report tables, all agencies in one year) and <b>How the comparison is made</b>.</p></section>
+      <section><h3>Words to know</h3>
+        <dl><dt>Processed</dt><dd>Requests an agency closed during the fiscal year.</dd>
+          <dt>Released in full, partly released, fully denied on exemptions</dt><dd>How a closed request ended after its records were reviewed. Many end in other ways: no records found, withdrawn, referred and more.</dd>
+          <dt>Exemptions</dt><dd>The nine reasons in the law (5 U.S.C. § 552(b)) that let an agency withhold records.</dd>
+          <dt>Backlog</dt><dd>Requests still pending at the end of the year beyond the legal time limit: 20 working days from a complete request, plus 10 in unusual circumstances.</dd>
+          <dt>Response time</dt><dd>Days from receiving a complete request to closing it.</dd>
+          <dt>Appeal</dt><dd>The requester asks the agency to review its decision.</dd></dl></section>
+    </div>
+    <p class="fd-keep"><b>Keep in mind.</b> Agencies fill in these reports themselves, and categories can change from year to year. foia.gov has no FY2008
+      figures for 26 agencies; they appear in FY2009–10. The reports show what changed, not why. Student prototype for MuckRock
+      (BU Spark! DS 701); not an official MuckRock product.</p>
+  </div>`;
+  function openGuide(card) { const b = card && card.querySelector(".bslib-full-screen-enter"); if (b) b.click() }
+  function fix(qh) {
+    qh.dataset.guide = "1";
+    const card = qh.closest(".card"); if (!card) return;
+    card.classList.add("fd-card");
+    if (!card.querySelector(".fd-guide")) (qh.closest(".card-body") || card).insertAdjacentHTML("beforeend", GUIDE);
+    const qn = qh.querySelector(".qnum");
+    if (!qn || qn.textContent.trim() !== "Federal FOIA Dashboard") return;   // only the start page; question headers stay as they are
+    qh.innerHTML = `<span class="qnum">Federal FOIA Dashboard</span> How federal agencies handle FOIA requests, from their own annual reports.
+      <div class="sel">FY2008–FY2025 · agencies and their components · data from foia.gov. Start with a storyline below, or pick a question on the left.</div>
+      <div class="fd-open"><button type="button" class="fd-link">How to use this dashboard ↗</button></div>`;
+    qh.querySelector(".fd-link").addEventListener("click", () => openGuide(card));
+  }
+  const scan = () => document.querySelectorAll(".qhead:not([data-guide])").forEach(fix);
+  new MutationObserver(scan).observe(document.documentElement, {childList: true, subtree: true});
+  document.addEventListener("DOMContentLoaded", scan);
+})();
