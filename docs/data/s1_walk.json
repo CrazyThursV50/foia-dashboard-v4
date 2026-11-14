@@ -1,0 +1,315 @@
+{
+ "built": "2026-11-14",
+ "source": "S1 notebook code (storyline_lib.py, 11/12) on component_master_no_03_06_11.csv (API, 11/06)",
+ "years": [
+  2008,
+  2009,
+  2010,
+  2011,
+  2012,
+  2013,
+  2014,
+  2015,
+  2016,
+  2017,
+  2018,
+  2019,
+  2020,
+  2021,
+  2022,
+  2023,
+  2024,
+  2025
+ ],
+ "cover": {
+  "series": {
+   "Released in full": [
+    50.0,
+    45.5,
+    47.0,
+    47.1,
+    47.3,
+    47.3,
+    42.0,
+    39.7,
+    39.3,
+    38.0,
+    40.1,
+    37.1,
+    36.8,
+    32.9,
+    30.2,
+    29.7,
+    24.3,
+    21.4
+   ],
+   "Partly released": [
+    10.2,
+    13.5,
+    16.0,
+    18.9,
+    18.2,
+    17.9,
+    21.2,
+    22.7,
+    23.0,
+    23.3,
+    23.0,
+    24.4,
+    22.8,
+    23.8,
+    23.1,
+    27.9,
+    31.7,
+    32.3
+   ],
+   "No records found": [
+    14.7,
+    14.2,
+    11.9,
+    12.0,
+    12.5,
+    11.7,
+    12.5,
+    13.4,
+    12.7,
+    13.6,
+    13.6,
+    13.5,
+    13.1,
+    13.5,
+    14.9,
+    13.9,
+    13.2,
+    13.5
+   ]
+  }
+ },
+ "steps": [
+  {
+   "kicker": "All agencies",
+   "title": "Across the government, full releases fell from 41.6% to 9.5%",
+   "text": [
+    "A closed request ends in one of 12 ways. Four are drawn here, each as a share of all requests closed that year. Released in full fell from 41.6% in FY2008 to 9.5% in FY2025; partly released went from 17.8% to 37.7% and no records found from 15.2% to 29.7%.",
+    "The curve is uneven. Is this one pattern shared across agencies, or a few large agencies moving the total?"
+   ],
+   "charts": [
+    {
+     "kind": "lines",
+     "title": "Share of all closed requests, all agencies",
+     "unit": "%",
+     "series": {
+      "Released in full": [
+       41.6,
+       34.6,
+       37.8,
+       37.5,
+       35.1,
+       35.0,
+       28.0,
+       22.6,
+       23.1,
+       21.9,
+       26.9,
+       25.3,
+       21.6,
+       19.8,
+       17.4,
+       16.0,
+       12.1,
+       9.5
+      ],
+      "Partly released": [
+       17.8,
+       26.3,
+       25.0,
+       27.2,
+       30.1,
+       30.0,
+       32.7,
+       40.0,
+       36.8,
+       36.8,
+       38.9,
+       40.0,
+       41.6,
+       40.1,
+       39.1,
+       38.5,
+       37.6,
+       37.7
+      ],
+      "No records found": [
+       15.2,
+       14.5,
+       13.1,
+       13.9,
+       13.3,
+       13.0,
+       14.9,
+       16.9,
+       20.1,
+       22.0,
+       14.8,
+       14.7,
+       16.2,
+       20.6,
+       21.5,
+       22.6,
+       24.9,
+       29.7
+      ],
+      "Fully denied on exemptions": [
+       3.8,
+       4.0,
+       5.0,
+       4.8,
+       4.6,
+       6.1,
+       6.0,
+       4.9,
+       5.7,
+       4.7,
+       4.3,
+       3.9,
+       4.9,
+       4.9,
+       4.4,
+       3.6,
+       3.3,
+       3.2
+      ]
+     }
+    }
+   ],
+   "note": "FY2008–09: 26 agencies are not yet in the foia.gov data."
+  },
+  {
+   "kicker": "All agencies · DHS",
+   "title": "DHS now closes 6 in 10 requests, and it rarely releases in full",
+   "text": [
+    "DHS's share of all closed requests rose from 18.9% in FY2008 to 60.8% in FY2025. In every year its full-release share (2.4%–12.1%) was below the rest of the government's.",
+    "So the government-wide figure looks more and more like DHS's own. Outside DHS, full releases also fell, from 48.7% to 20.7%."
+   ],
+   "charts": [
+    {
+     "kind": "lines",
+     "title": "DHS's share of all closed requests",
+     "unit": "%",
+     "series": {
+      "DHS share": [
+       18.9,
+       28.1,
+       23.1,
+       23.1,
+       30.9,
+       30.1,
+       36.8,
+       45.3,
+       40.9,
+       44.6,
+       45.2,
+       49.0,
+       50.8,
+       55.7,
+       57.6,
+       51.7,
+       59.7,
+       60.8
+      ]
+     }
+    },
+    {
+     "kind": "lines",
+     "title": "Released in full, share of closed requests",
+     "unit": "%",
+     "series": {
+      "Outside DHS": [
+       48.7,
+       43.7,
+       45.5,
+       45.5,
+       46.2,
+       46.2,
+       40.2,
+       37.6,
+       35.2,
+       33.2,
+       43.4,
+       42.3,
+       34.5,
+       33.8,
+       29.2,
+       26.3,
+       23.5,
+       20.7
+      ],
+      "DHS": [
+       11.4,
+       11.3,
+       12.1,
+       10.4,
+       10.5,
+       9.2,
+       7.0,
+       4.5,
+       5.6,
+       7.9,
+       6.9,
+       7.5,
+       9.1,
+       8.7,
+       8.8,
+       6.5,
+       4.4,
+       2.4
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "kicker": "All agencies · DHS",
+   "title": "A quarter to a half of the national drop comes from DHS handling more of the requests",
+   "text": [
+    "The government-wide full-release share fell 32.1 points from FY2008 to FY2025. A composition decomposition (Kitagawa 1955) splits that fall into three parts. Each bar is the average of two ways of weighting; the thin line is the range between them.",
+    "Part of the national decline is a shift toward DHS. But the fall outside DHS is real: 10.9 to 22.7 points whichever way it is weighted. The next steps look outside DHS."
+   ],
+   "charts": [
+    {
+     "kind": "bars",
+     "title": "FY2008–25 change in the full-release share: −32.1 points",
+     "unit": " pts",
+     "bars": [
+      {
+       "name": "Outside DHS: its share fell",
+       "v": 16.8,
+       "lo": 10.9,
+       "hi": 22.7
+      },
+      {
+       "name": "DHS: handles more of the requests",
+       "v": 11.7,
+       "lo": 7.7,
+       "hi": 15.7
+      },
+      {
+       "name": "DHS: its own share fell",
+       "v": 3.6,
+       "lo": 1.7,
+       "hi": 5.5
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "upcoming": [
+  "NARA's outcomes swing from year to year",
+  "Outside DHS and NARA",
+  "Partial releases and VBA",
+  "Agencies' own shares, or a change in mix?",
+  "Leaving out any one agency or component",
+  "The finding and its limits"
+ ]
+}

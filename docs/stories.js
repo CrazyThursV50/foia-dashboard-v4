@@ -6,10 +6,10 @@
 
   const STORIES = [
     {
-      kicker: "Outcomes", q: 4, qlabel: "Outcomes & exemptions",
-      title: "Fewer requesters get everything they asked for",
-      body: "Outside DHS and NARA, the share of processed requests released in full fell from 50% in FY2008 to 21% in FY2025. Partial releases rose from 10% to 32%. The share where no records were found stayed around 12–15% every year.",
-      foot: "DHS and NARA are left out. DHS's “no records” share jumped after FY2021 and has not been checked yet; NARA's categories swing from year to year. Share of all processed requests.",
+      kicker: "Outcomes", q: 4, qlabel: "Outcomes & exemptions", walk: true,
+      title: "A shrinking share of requests is released in full",
+      body: "Outside DHS and NARA, the share of processed requests released in full fell from 50.0% in FY2008 to 21.4% in FY2025. The fall holds with any single agency or component left out, and it comes mostly from agencies' own shares falling.",
+      foot: "Share of all processed requests. Why DHS and NARA are left out, and what lies behind the fall, is in the 9 steps.",
       yMax: 60, unit: "%",
       series: [
         {name: "Released in full", color: C.blue, v: [50.0,45.5,47.0,47.1,47.3,47.3,42.0,39.7,39.3,38.0,40.1,37.1,36.8,32.9,30.2,29.7,24.3,21.4]},
@@ -106,9 +106,10 @@
     if (s.series.length > 1) el.insertAdjacentHTML("beforeend", `<div class="legend">${s.series.map(se => `<span><i style="background:${se.color}"></i>${se.name}</span>`).join("")}</div>`);
     el.appendChild(chart(s));
     const rows = YEARS.map((yr, i) => `<tr><td>FY${yr}</td>${s.series.map(se => `<td>${se.v[i]}${s.unit}</td>`).join("")}${s.extra ? `<td>${s.extra.fmt(s.extra.v[i])}</td>` : ""}</tr>`).join("");
-    el.insertAdjacentHTML("beforeend", `<p class="foot">${s.foot}</p><div class="actions"><button type="button" class="go" data-q="${s.q}">Explore: ${s.qlabel} →</button>
+    el.insertAdjacentHTML("beforeend", `<p class="foot">${s.foot}</p><div class="actions">${s.walk ? `<button type="button" class="walk">How we got here · 9 steps →</button>` : ""}<button type="button" class="go" data-q="${s.q}">Explore: ${s.qlabel} →</button>
       <details><summary>Numbers</summary><table><tr><th>Year</th>${s.series.map(se => `<th>${se.name}</th>`).join("")}${s.extra ? `<th>${s.extra.name}</th>` : ""}</tr>${rows}</table></details></div>`);
     el.querySelector(".go").addEventListener("click", () => { const b = document.querySelector(`.qbtn[data-id="${s.q}"]`); if (b) b.click(); });
+    const wb = el.querySelector(".walk"); if (wb) wb.addEventListener("click", () => window.openS1Walk && window.openS1Walk(wb));
     return el;
   }
 
@@ -277,4 +278,125 @@
   }
   const scan = () => document.querySelectorAll(".overview:not([data-acf])").forEach(fillAC);
   new MutationObserver(scan).observe(document.documentElement, {childList: true, subtree: true});
+})();
+
+/* ---------- Storyline 1 walkthrough: a dialog of step cards, swipe or arrow keys (sample, branch exploring-storyline-display, 2026-11-14) ----------
+   Text and numbers: data/s1_walk.json, built by ~/ds701-spark/data/scripts/storyline_cards_1114/build_s1_walk.py from the S1 notebook code. */
+(function () {
+  const C = {blue: "#4582cc", purple: "#8c3a91", gold: "#d4a92c", green: "#0b5a36", ink: "#333C47", muted: "#6c6b66", grid: "#e9ecf1"};
+  const COLORS = {"Released in full": C.blue, "Partly released": C.purple, "No records found": C.gold, "Fully denied on exemptions": C.green,
+    "DHS share": C.purple, "Outside DHS": C.blue, "DHS": C.purple};
+  const SHORT = {"Released in full": "in full", "Partly released": "partly", "No records found": "no records", "Fully denied on exemptions": "denied",
+    "Outside DHS": "outside DHS", "DHS": "DHS"};
+  const STEPS = 9, NS = "http://www.w3.org/2000/svg";
+  let DATA = null, modal = null, idx = 0, opener = null;
+  const el = (t, a) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); return e };
+  const txt = (svg, a, s) => { const e = el("text", Object.assign({"font-size": 10.5, fill: C.ink}, a)); e.textContent = s; svg.appendChild(e); return e };
+  const nice = m => [10, 20, 25, 40, 50, 60, 70, 80, 100].find(t => t >= m) || Math.ceil(m / 10) * 10;
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"})[c]);
+
+  function lines(ch, years, W) {
+    const H = Math.round(W * 0.38), M = {l: 36, r: Math.round(W * 0.2), t: 10, b: 24}, names = Object.keys(ch.series), n = years.length - 1;
+    const top = nice(Math.max(...names.flatMap(k => ch.series[k])));
+    const x = i => M.l + i / n * (W - M.l - M.r), y = v => M.t + (1 - v / top) * (H - M.t - M.b);
+    const svg = el("svg", {viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": ch.title});
+    [top / 2, top].forEach(t => { svg.appendChild(el("line", {x1: M.l, x2: W - M.r, y1: y(t), y2: y(t), stroke: C.grid})); txt(svg, {x: M.l - 6, y: y(t) + 3.5, "text-anchor": "end", "font-size": 10, fill: C.muted}, t + "%") });
+    svg.appendChild(el("line", {x1: M.l, x2: W - M.r, y1: y(0), y2: y(0), stroke: "#8a8f98"})); txt(svg, {x: M.l - 6, y: y(0) + 3.5, "text-anchor": "end", "font-size": 10, fill: C.muted}, "0%");
+    [2008, 2012, 2016, 2020, 2025].forEach(yr => txt(svg, {x: x(years.indexOf(yr)), y: H - 6, "text-anchor": "middle", "font-size": 10, fill: C.muted}, yr));
+    names.forEach(k => svg.appendChild(el("path", {d: ch.series[k].map((v, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" "), fill: "none", stroke: COLORS[k] || C.ink, "stroke-width": 2.2, "stroke-linejoin": "round", "stroke-linecap": "round"})));
+    const ends = names.map(k => ({k, v: ch.series[k][n], yy: y(ch.series[k][n])})).sort((a, b) => a.yy - b.yy);
+    for (let i = 1; i < ends.length; i++) if (ends[i].yy - ends[i - 1].yy < 13) ends[i].yy = ends[i - 1].yy + 13;
+    ends.forEach(e => { svg.appendChild(el("circle", {cx: x(n), cy: y(e.v), r: 3, fill: COLORS[e.k] || C.ink})); txt(svg, {x: x(n) + 8, y: e.yy + 3.5}, `${e.v}%${names.length > 1 ? " " + (SHORT[e.k] || e.k) : ""}`) });
+    const cross = el("line", {y1: M.t, y2: H - M.b, stroke: "#9aa3ae", visibility: "hidden"}); svg.appendChild(cross);
+    const hit = el("rect", {x: M.l, y: 0, width: W - M.l - M.r, height: H, fill: "transparent"}); svg.appendChild(hit);
+    const box = document.createElement("div"); box.className = "s1m-chart"; const tip = document.createElement("div"); tip.className = "tip";
+    hit.addEventListener("pointermove", ev => { const r = svg.getBoundingClientRect(), i = Math.max(0, Math.min(n, Math.round(((ev.clientX - r.left) / r.width * W - M.l) / (W - M.l - M.r) * n)));
+      cross.setAttribute("x1", x(i)); cross.setAttribute("x2", x(i)); cross.setAttribute("visibility", "visible");
+      tip.innerHTML = `<b>FY${years[i]}</b><br>` + names.map(k => `<i style="background:${COLORS[k] || C.ink}"></i>${esc(k)}: ${ch.series[k][i]}%`).join("<br>");
+      tip.style.display = "block"; const left = x(i) / W * r.width; tip.style.left = (left > r.width * 0.5 ? left - tip.offsetWidth - 10 : left + 10) + "px"; tip.style.top = "4px" });
+    hit.addEventListener("pointerleave", () => { cross.setAttribute("visibility", "hidden"); tip.style.display = "none" });
+    box.appendChild(svg); box.appendChild(tip); return box;
+  }
+  function bars(ch, W) {
+    const rowH = 44, M = {l: 250, r: 64, t: 6, b: 26}, H = M.t + rowH * ch.bars.length + M.b;
+    const top = nice(Math.max(...ch.bars.map(b => b.hi))), x = v => M.l + v / top * (W - M.l - M.r);
+    const svg = el("svg", {viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": ch.title});
+    [0, top / 2, top].forEach(t => { svg.appendChild(el("line", {x1: x(t), x2: x(t), y1: M.t, y2: H - M.b, stroke: t ? C.grid : "#8a8f98"})); txt(svg, {x: x(t), y: H - 8, "text-anchor": "middle", "font-size": 10, fill: C.muted}, `${t} pts`) });
+    ch.bars.forEach((b, i) => { const y0 = M.t + i * rowH + 12, c = i ? C.purple : C.blue;
+      txt(svg, {x: M.l - 10, y: y0 + 13, "text-anchor": "end", "font-size": 11.5}, b.name);
+      svg.appendChild(el("rect", {x: M.l, y: y0, width: x(b.v) - M.l, height: 18, rx: 2, fill: c, opacity: 0.85}));
+      svg.appendChild(el("line", {x1: x(b.lo), x2: x(b.hi), y1: y0 + 9, y2: y0 + 9, stroke: C.ink, "stroke-width": 1.2}));
+      [b.lo, b.hi].forEach(v => svg.appendChild(el("line", {x1: x(v), x2: x(v), y1: y0 + 4, y2: y0 + 14, stroke: C.ink, "stroke-width": 1.2})));
+      txt(svg, {x: x(b.hi) + 6, y: y0 + 13, "font-weight": 600}, `${b.v}`); });
+    const box = document.createElement("div"); box.className = "s1m-chart"; box.appendChild(svg);
+    box.insertAdjacentHTML("beforeend", `<table class="s1m-range"><tr><th></th><th>Average</th><th>Range</th></tr>${ch.bars.map(b => `<tr><td>${esc(b.name)}</td><td>${b.v} pts</td><td>${b.lo}–${b.hi}</td></tr>`).join("")}</table>`);
+    return box;
+  }
+  function slide(s, i) {
+    const d = document.createElement("section"); d.className = "s1m-slide"; d.setAttribute("aria-label", `Step ${i + 1} of ${STEPS}`);
+    d.innerHTML = `<div class="s1m-kicker">Step ${i + 1} of ${STEPS} · ${esc(s.kicker)}</div><h3>${esc(s.title)}</h3>${s.text.map(p => `<p>${esc(p)}</p>`).join("")}`;
+    const wrap = document.createElement("div"); wrap.className = "s1m-charts" + (s.charts.length > 1 ? " two" : "");
+    s.charts.forEach(ch => { const f = document.createElement("figure"); f.innerHTML = `<figcaption>${esc(ch.title)}</figcaption>`;
+      const names = ch.series ? Object.keys(ch.series) : [];
+      if (names.length > 1) f.insertAdjacentHTML("beforeend", `<div class="s1m-legend">${names.map(k => `<span><i style="background:${COLORS[k] || C.ink}"></i>${esc(k)}</span>`).join("")}</div>`);
+      f.appendChild(ch.kind === "bars" ? bars(ch, 640) : lines(ch, DATA.years, s.charts.length > 1 ? 440 : 640)); wrap.appendChild(f) });
+    d.appendChild(wrap);
+    if (s.note) d.insertAdjacentHTML("beforeend", `<p class="s1m-note">${esc(s.note)}</p>`);
+    return d;
+  }
+  function todo(title, i) {
+    const d = document.createElement("section"); d.className = "s1m-slide";
+    d.innerHTML = `<div class="s1m-kicker">Step ${i + 1} of ${STEPS}</div><h3>${esc(title)}</h3><div class="s1m-todo">Not in this sample yet. In the full version this step has its own chart and finding.</div>`;
+    return d;
+  }
+  function build() {
+    modal = document.createElement("div"); modal.className = "s1m"; modal.hidden = true;
+    modal.innerHTML = `<div class="s1m-backdrop"></div>
+      <div class="s1m-panel" role="dialog" aria-modal="true" aria-labelledby="s1m-name">
+        <header class="s1m-head"><div><div class="s1m-eyebrow">Storyline · Outcomes</div><div class="s1m-name" id="s1m-name">How we got to “A shrinking share of requests is released in full”</div></div>
+          <button type="button" class="s1m-x" aria-label="Close">×</button></header>
+        <div class="s1m-dots"></div>
+        <div class="s1m-view"><div class="s1m-track"></div></div>
+        <footer class="s1m-foot"><button type="button" class="s1m-prev">← Back</button><span class="s1m-count" aria-live="polite"></span><button type="button" class="s1m-next">Next →</button></footer>
+      </div>`;
+    document.body.appendChild(modal);
+    const track = modal.querySelector(".s1m-track"), dots = modal.querySelector(".s1m-dots"), done = DATA.steps.length;
+    for (let i = 0; i < STEPS; i++) {
+      const title = i < done ? DATA.steps[i].title : DATA.upcoming[i - done];
+      track.appendChild(i < done ? slide(DATA.steps[i], i) : todo(title, i));
+      const b = document.createElement("button"); b.type = "button"; b.className = "s1m-dot" + (i < done ? "" : " todo");
+      b.title = b.ariaLabel = `Step ${i + 1}: ${title}`; b.addEventListener("click", () => go(i)); dots.appendChild(b);
+    }
+    modal.querySelector(".s1m-x").addEventListener("click", close);
+    modal.querySelector(".s1m-backdrop").addEventListener("click", close);
+    modal.querySelector(".s1m-prev").addEventListener("click", () => go(idx - 1));
+    modal.querySelector(".s1m-next").addEventListener("click", () => go(idx + 1));
+    const view = modal.querySelector(".s1m-view"); let sx = null, sy = 0;   // swipe: a mostly horizontal drag of 50px or more
+    view.addEventListener("pointerdown", e => { sx = e.clientX; sy = e.clientY });
+    view.addEventListener("pointerup", e => { if (sx == null) return; const dx = e.clientX - sx, dy = e.clientY - sy; sx = null;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > 1.5 * Math.abs(dy)) go(idx + (dx < 0 ? 1 : -1)) });
+    view.addEventListener("pointercancel", () => { sx = null });
+    document.addEventListener("keydown", e => {   // on the document: a click inside the dialog can move focus to the page
+      if (!modal || modal.hidden) return;
+      if (e.key === "Escape") close(); else if (e.key === "ArrowRight") go(idx + 1); else if (e.key === "ArrowLeft") go(idx - 1);
+      else if (e.key === "Tab") { const f = [...modal.querySelectorAll("button:not([disabled])")].filter(b => !b.closest("[inert]")); const a = f.indexOf(document.activeElement);
+        if (a === -1) { e.preventDefault(); f[0].focus() } else if (e.shiftKey && a === 0) { e.preventDefault(); f[f.length - 1].focus() } else if (!e.shiftKey && a === f.length - 1) { e.preventDefault(); f[0].focus() } } });
+  }
+  function go(i) {
+    idx = Math.max(0, Math.min(STEPS - 1, i));
+    modal.querySelector(".s1m-track").style.transform = `translateX(${-idx * 100}%)`;
+    modal.querySelectorAll(".s1m-dot").forEach((d, j) => j === idx ? d.setAttribute("aria-current", "step") : d.removeAttribute("aria-current"));
+    modal.querySelectorAll(".s1m-slide").forEach((s, j) => { s.inert = j !== idx; if (j === idx) s.scrollTop = 0 });
+    modal.querySelector(".s1m-count").textContent = `Step ${idx + 1} of ${STEPS}`;
+    modal.querySelector(".s1m-prev").disabled = idx === 0; modal.querySelector(".s1m-next").disabled = idx === STEPS - 1;
+  }
+  async function open(from) {
+    opener = from;
+    try { if (!DATA) DATA = await fetch("data/s1_walk.json").then(r => { if (!r.ok) throw new Error(r.status); return r.json() }) }
+    catch (err) { console.error("S1 walkthrough: could not load data/s1_walk.json", err); return }
+    if (!modal) build();
+    modal.hidden = false; document.documentElement.classList.add("s1m-open"); go(0); modal.querySelector(".s1m-x").focus();
+  }
+  function close() { modal.hidden = true; document.documentElement.classList.remove("s1m-open"); if (opener && opener.isConnected) opener.focus() }
+  window.openS1Walk = open;
 })();
