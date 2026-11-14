@@ -39,7 +39,7 @@ body.noq .bslib-grid[style*="17fr"] > :first-child .card-body { padding-bottom: 
 .s1m[hidden] { display: none; }
 html.s1m-open, html.s1m-open body { overflow: hidden; }
 .s1m-backdrop { position: absolute; inset: 0; background: rgba(20, 26, 36, 0.55); }
-.s1m-panel { position: relative; width: min(980px, calc(100vw - 32px)); height: min(760px, calc(100vh - 48px)); background: #fff; border-radius: 12px; box-shadow: 0 12px 40px rgba(0,0,0,0.25); display: flex; flex-direction: column; overflow: hidden; }
+.s1m-panel { position: relative; width: min(1400px, calc(100vw - 48px)); height: calc(100vh - 40px); background: #fff; border-radius: 12px; box-shadow: 0 12px 40px rgba(0,0,0,0.25); display: flex; flex-direction: column; overflow: hidden; }
 .s1m-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; padding: 0.9rem 1.3rem 0.35rem; }
 .s1m-eyebrow { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: #4582CC; }
 .s1m-name { font-size: 1rem; font-weight: 600; color: #212529; }
@@ -52,7 +52,7 @@ html.s1m-open, html.s1m-open body { overflow: hidden; }
 .s1m-view { flex: 1; min-height: 0; overflow: hidden; border-top: 1px solid #eef0f3; border-bottom: 1px solid #eef0f3; touch-action: pan-y; }
 .s1m-track { display: flex; height: 100%; transition: transform 0.35s ease; }
 @media (prefers-reduced-motion: reduce) { .s1m-track { transition: none; } }
-.s1m-slide { flex: 0 0 100%; min-width: 0; height: 100%; overflow-y: auto; padding: 1rem 1.4rem 1.2rem; box-sizing: border-box; }
+.s1m-slide { flex: 0 0 100%; min-width: 0; height: 100%; overflow-y: auto; padding: 1.6rem 2.6rem 2rem; box-sizing: border-box; }
 .s1m-kicker { font-size: 0.74rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #6c6b66; margin-bottom: 0.25rem; }
 .s1m-slide h3 { font-size: 1.15rem; font-weight: 600; line-height: 1.3; margin: 0 0 0.5rem; color: #212529; }
 .s1m-slide p { font-size: 0.9rem; line-height: 1.5; color: #333C47; margin: 0 0 0.45rem; max-width: 60rem; }
@@ -79,3 +79,48 @@ html.s1m-open, html.s1m-open body { overflow: hidden; }
 .s1m-foot button:hover:not(:disabled) { background: #e3edf9; }
 .s1m-foot button:disabled { opacity: 0.4; cursor: default; }
 .s1m-count { font-size: 0.8rem; color: #6c6b66; }
+
+/* 2026-11-14: placeholder cards for storylines still being checked (grey, blurred, no old content) */
+.story.placeholder { background: #f4f5f7; border-style: dashed; border-color: #cfd5de; }
+.story.placeholder .kicker { color: #8a8f98; }
+.story.placeholder .veil-wrap { position: relative; flex: 1; display: flex; flex-direction: column; }
+.story.placeholder .veil { filter: blur(3px) grayscale(1); opacity: 0.55; pointer-events: none; user-select: none; flex: 1; }
+.story.placeholder .sk { height: 0.62rem; background: #c3c9d2; border-radius: 4px; margin: 0.45rem 0; }
+.story.placeholder .sk.tall { height: 0.95rem; }
+.story.placeholder .w95 { width: 95%; } .story.placeholder .w90 { width: 90%; } .story.placeholder .w85 { width: 85%; }
+.story.placeholder .w80 { width: 80%; } .story.placeholder .w70 { width: 70%; } .story.placeholder .w60 { width: 60%; } .story.placeholder .w55 { width: 55%; }
+.story.placeholder .veil svg { margin: 0.5rem 0; }
+.story.placeholder .veil-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.35rem; text-align: center; padding: 0 1rem; }
+.story.placeholder .veil-label b { background: rgba(255,255,255,0.94); border: 1px solid #cfd5de; border-radius: 999px; padding: 0.3rem 0.95rem; font-size: 0.86rem; font-weight: 600; color: #4a5059; }
+.story.placeholder .veil-label span { font-size: 0.76rem; color: #55544f; background: rgba(244,245,247,0.9); padding: 0.1rem 0.45rem; border-radius: 4px; }
+
+/* walkthrough v2 (2026-11-14): text left, charts right, more room */
+.s1m-head { padding: 1rem 2.6rem 0.35rem; }
+.s1m-dots { padding: 0.35rem 2.6rem 0.8rem; }
+.s1m-foot { padding: 0.65rem 2.6rem; }
+.s1m-cols { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 3rem; align-items: start; }
+@media (max-width: 1000px) { .s1m-cols { grid-template-columns: minmax(0, 1fr); gap: 1.6rem; } }
+.s1m-text { max-width: 36rem; }
+.s1m-slide h3 { font-size: 1.3rem; line-height: 1.3; margin: 0.1rem 0 1rem; }
+.s1m-text h4 { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #4582CC; margin: 1.1rem 0 0.35rem; }
+.s1m-text p { font-size: 0.93rem; line-height: 1.6; margin: 0 0 0.55rem; }
+.s1m-method { margin-top: 1.3rem; padding: 0.7rem 0.95rem; background: #f5f7fa; border-left: 3px solid #c9d6ea; border-radius: 0 6px 6px 0; font-size: 0.8rem; line-height: 1.5; color: #4a5059; }
+.s1m-method b { font-weight: 600; color: #333C47; }
+.s1m-figs { display: flex; flex-direction: column; gap: 1.8rem; padding-top: 0.3rem; }
+.s1m-figs figure { margin: 0; }
+.s1m-figs figcaption { font-size: 0.86rem; font-weight: 600; color: #333C47; margin-bottom: 0.3rem; }
+.s1m-figs .s1m-chart { max-width: none; }
+.s1m-ex p { font-size: 0.8rem; line-height: 1.5; color: #4a5059; margin: 0 0 0.5rem; }
+.s1m-ex table { border-collapse: collapse; font-size: 0.8rem; font-variant-numeric: tabular-nums; color: #333C47; }
+.s1m-ex th, .s1m-ex td { padding: 0.25rem 0.7rem; border-bottom: 1px solid #eef0f3; text-align: right; white-space: nowrap; }
+.s1m-ex tr:first-child th { font-weight: 600; color: #6c6b66; font-size: 0.74rem; }
+.s1m-ex th:first-child { text-align: left; font-weight: 600; }
+.s1m-ex b { color: #1f4f8a; }
+.s1m-small { font-size: 0.74rem !important; color: #6c6b66 !important; margin-top: 0.4rem !important; }
+.s1m-figs { position: sticky; top: 0; }   /* charts stay in view while the text scrolls */
+.s1m-view { position: relative; }
+.s1m-more { position: absolute; left: 0; right: 0; bottom: 0; height: 3.2rem; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 0.45rem;
+  background: linear-gradient(rgba(255,255,255,0), #fff 75%); font-size: 0.76rem; color: #6c6b66; pointer-events: none; opacity: 0; transition: opacity 0.2s; }
+.s1m-view.more .s1m-more { opacity: 1; }
+.s1m-more { right: auto; width: calc(2.6rem + (100% - 8.2rem) * 5 / 12); }   /* only over the text column */
+@media (max-width: 1000px) { .s1m-more { width: 100%; } }

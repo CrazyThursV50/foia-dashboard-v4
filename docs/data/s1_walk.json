@@ -89,15 +89,32 @@
   {
    "kicker": "All agencies",
    "title": "Across the government, full releases fell from 41.6% to 9.5%",
-   "text": [
-    "A closed request ends in one of 12 ways. Four are drawn here, each as a share of all requests closed that year. Released in full fell from 41.6% in FY2008 to 9.5% in FY2025; partly released went from 17.8% to 37.7% and no records found from 15.2% to 29.7%.",
-    "The curve is uneven. Is this one pattern shared across agencies, or a few large agencies moving the total?"
+   "sections": [
+    {
+     "h": "What we looked at",
+     "p": [
+      "In the annual reports, every closed request ends in one of 12 ways. Four are drawn here, each as a share of all requests closed that year: released in full, partly released, no records found, and fully denied on exemptions. The other eight (such as referred, withdrawn or duplicate) stay in the total."
+     ]
+    },
+    {
+     "h": "What the chart shows",
+     "p": [
+      "Released in full fell from 41.6% in FY2008 to 9.5% in FY2025.",
+      "Partly released rose from 17.8% to 37.7%. It has been the most common of the four in every year since FY2014; before that, released in full was.",
+      "No records found rose from 15.2% to 29.7%, with a dip in FY2018 (22.0% to 14.8%). Fully denied on exemptions stayed small: 3.8% to 3.2%."
+     ]
+    },
+    {
+     "h": "What this raises",
+     "p": [
+      "The curve is uneven, and one government-wide line can combine very different agencies. Is this a pattern shared across agencies, or the work of a few agencies with many requests or unusual outcomes? We start with DHS, which closes a very large number of requests."
+     ]
+    }
    ],
+   "method": "Share = requests closed that way ÷ all requests closed that year. Government totals add up every agency's reported total. FY2008–09: 26 agencies are not yet in the foia.gov data.",
    "charts": [
     {
-     "kind": "lines",
      "title": "Share of all closed requests, all agencies",
-     "unit": "%",
      "series": {
       "Released in full": [
        41.6,
@@ -181,21 +198,37 @@
       ]
      }
     }
-   ],
-   "note": "FY2008–09: 26 agencies are not yet in the foia.gov data."
+   ]
   },
   {
    "kicker": "All agencies · DHS",
    "title": "DHS now closes 6 in 10 requests, and it rarely releases in full",
-   "text": [
-    "DHS's share of all closed requests rose from 18.9% in FY2008 to 60.8% in FY2025. In every year its full-release share (2.4%–12.1%) was below the rest of the government's.",
-    "So the government-wide figure looks more and more like DHS's own. Outside DHS, full releases also fell, from 48.7% to 20.7%."
+   "sections": [
+    {
+     "h": "What we looked at",
+     "p": [
+      "The same figures, split into DHS and everyone else (“outside DHS”: every other agency and component)."
+     ]
+    },
+    {
+     "h": "What the charts show",
+     "p": [
+      "DHS closed about 109,000 requests in FY2008, 18.9% of all. In FY2025 it closed about 995,000, more than 9 times as many and 60.8% of all. Outside DHS, closed requests grew only from about 469,000 to about 640,000. DHS has closed more than half of all requests every year since FY2020 (49.0% in FY2019).",
+      "In every year DHS released in full less often than the rest of the government: 11.4% in FY2008 and 2.4% in FY2025, never above 12.1%. Outside DHS the share fell from 48.7% to 20.7%."
+     ]
+    },
+    {
+     "h": "Why it matters",
+     "p": [
+      "The government-wide share is an average of DHS and outside DHS, weighted by how many requests each closes. Since DHS passed half, the government-wide line (grey, dashed) sits closer to DHS's.",
+      "So one national line can hide opposite movements. Partly released rose government-wide from 17.8% to 37.7%; outside DHS it rose from 10.0% to 34.3%, while at DHS it fell from 51.3% to 40.0%."
+     ]
+    }
    ],
+   "method": "Each share is out of that group's own closed requests. “Outside DHS” includes NARA and every other agency.",
    "charts": [
     {
-     "kind": "lines",
      "title": "DHS's share of all closed requests",
-     "unit": "%",
      "series": {
       "DHS share": [
        18.9,
@@ -217,12 +250,16 @@
        59.7,
        60.8
       ]
-     }
+     },
+     "ref": [
+      {
+       "v": 50,
+       "label": "half"
+      }
+     ]
     },
     {
-     "kind": "lines",
      "title": "Released in full, share of closed requests",
-     "unit": "%",
      "series": {
       "Outside DHS": [
        48.7,
@@ -263,6 +300,26 @@
        6.5,
        4.4,
        2.4
+      ],
+      "All agencies": [
+       41.6,
+       34.6,
+       37.8,
+       37.5,
+       35.1,
+       35.0,
+       28.0,
+       22.6,
+       23.1,
+       21.9,
+       26.9,
+       25.3,
+       21.6,
+       19.8,
+       17.4,
+       16.0,
+       12.1,
+       9.5
       ]
      }
     }
@@ -271,15 +328,39 @@
   {
    "kicker": "All agencies · DHS",
    "title": "A quarter to a half of the national drop comes from DHS handling more of the requests",
-   "text": [
-    "The government-wide full-release share fell 32.1 points from FY2008 to FY2025. A composition decomposition (Kitagawa 1955) splits that fall into three parts. Each bar is the average of two ways of weighting; the thin line is the range between them.",
-    "Part of the national decline is a shift toward DHS. But the fall outside DHS is real: 10.9 to 22.7 points whichever way it is weighted. The next steps look outside DHS."
+   "sections": [
+    {
+     "h": "The question",
+     "p": [
+      "The government-wide full-release share fell 32.1 points (41.6% to 9.5%). Two things changed at once: the rates (DHS 11.4% to 2.4%, outside DHS 48.7% to 20.7%) and DHS's share of closed requests (18.9% to 60.8%). How much of the fall is agencies releasing in full less often, and how much is more requests going to DHS, which rarely releases in full?"
+     ]
+    },
+    {
+     "h": "How the split works",
+     "p": [
+      "Change one thing at a time, as in the example with made-up numbers: first the rates with the request counts held fixed, then the counts with the rates held fixed. The middle row never happened; it only separates the two changes.",
+      "Done in the other order, the parts come out different. The method (a composition decomposition, Kitagawa 1955) takes the average of the two orders and reports both as a range. In either order the parts add up exactly to the total."
+     ]
+    },
+    {
+     "h": "What we found",
+     "p": [
+      "About 16.8 points come from the share outside DHS falling (10.9–22.7), about 11.7 from DHS handling more of the requests (7.7–15.7), and about 3.6 from DHS's own share falling (1.7–5.5).",
+      "So a quarter to a half of the national drop is the shift toward DHS. But outside DHS the share fell on its own: 10.9 to 22.7 points, whichever order is used."
+     ]
+    },
+    {
+     "h": "What comes next",
+     "p": [
+      "Inside DHS there is a different change: its no-records share rose from 7.9% to 40.2% (most of the added count is at CBP and USCIS), while outside DHS it did not rise (16.9% to 13.4%). That is kept as a separate lead. The rest of this storyline follows the fall outside DHS: is it driven by individual agencies?"
+     ]
+    }
    ],
+   "method": "An arithmetic split: it shows how many points each part accounts for, not why. It uses two groups only; step 7 splits by agency.",
    "charts": [
     {
      "kind": "bars",
      "title": "FY2008–25 change in the full-release share: −32.1 points",
-     "unit": " pts",
      "bars": [
       {
        "name": "Outside DHS: its share fell",
@@ -301,7 +382,48 @@
       }
      ]
     }
-   ]
+   ],
+   "example": {
+    "caption": "The idea, with made-up numbers. A is like DHS (rarely releases in full), B like the rest. First B's rate falls (42% to 26%: 16 points from rates); then 40 requests move from B to A (26% to 18%: 8 points from the shift).",
+    "head": [
+     "",
+     "A requests",
+     "A rate",
+     "B requests",
+     "B rate",
+     "Released in full",
+     "Share"
+    ],
+    "rows": [
+     [
+      "Year 1",
+      "20",
+      "10%",
+      "80",
+      "50%",
+      "2 + 40 = 42",
+      "42%"
+     ],
+     [
+      "Hypothetical",
+      "20",
+      "10%",
+      "80",
+      "*30%",
+      "2 + 24 = 26",
+      "26%"
+     ],
+     [
+      "Year 2",
+      "*60",
+      "10%",
+      "*40",
+      "30%",
+      "6 + 12 = 18",
+      "18%"
+     ]
+    ]
+   }
   }
  ],
  "upcoming": [
