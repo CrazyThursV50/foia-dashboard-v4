@@ -175,3 +175,5 @@ html.s1m-open, html.s1m-open body { overflow: hidden; }
 .tl-y.on { background: #78b7e2; color: #12233b; }
 .tl-y.anchor { background: #4582CC; color: #fff; }
 .fd-sub { margin-top: 0.2rem; }
+.fd-start .fd-tl { display: none; }
+.fd-has-tl.fd-start > .card-body { padding-right: 1rem; }

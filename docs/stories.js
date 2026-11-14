@@ -314,7 +314,7 @@ function storyPlaceholder(kicker) {
       <section><h3>Choosing what you see</h3>
         <dl><dt>Agency</dt><dd>“All agencies (government total)”, or one agency.</dd>
           <dt>Component</dt><dd>An office inside the agency you picked.</dd>
-          <dt>Fiscal years (top right)</dt><dd>Pick All years, Last 10, Last 5 or the latest year; or click a first year, then a last year. Click one year twice to see only that year. One-year views (distribution, exemptions, tables) use the last year chosen.</dd>
+          <dt>Fiscal years (top right, once you pick a question or an agency)</dt><dd>Pick All years, Last 10, Last 5 or the latest year; or click a first year, then a last year. Click one year twice to see only that year. One-year views (distribution, exemptions, tables) use the last year chosen.</dd>
           <dt>Compare with (up to 5)</dt><dd>Adds agencies or components to the same chart; × removes one.</dd>
           <dt>Agencies added up in the total</dt><dd>All reporting agencies (71–122 a year), or only the 70 that reported all 18 years, so a total does not grow just because more agencies report.</dd></dl>
         <p>With an agency chosen and no question, the page shows an <b>Overview</b>: the key measure of each question. Each question has three tabs:
@@ -337,8 +337,9 @@ function storyPlaceholder(kicker) {
     const card = qh.closest(".card"); if (!card) return;
     card.classList.add("fd-card");
     if (!card.querySelector(".fd-guide")) (qh.closest(".card-body") || card).insertAdjacentHTML("beforeend", GUIDE);
-    const qn = qh.querySelector(".qnum");
-    if (!qn || qn.textContent.trim() !== "Federal FOIA Dashboard") return;   // only the start page; question headers stay as they are
+    const qn = qh.querySelector(".qnum"), start = !!qn && qn.textContent.trim() === "Federal FOIA Dashboard";
+    card.classList.toggle("fd-start", start);   // the start page shows only the storylines, which do not use the years: no year buttons there
+    if (!start) return;   // only the start page; question and overview headers stay as they are
     qh.innerHTML = `<span class="qnum">Federal FOIA Dashboard</span>
       <div class="fd-sub">How federal agencies handle FOIA requests, from their own annual reports.</div>
       <div class="fd-open"><button type="button" class="fd-link">How to use this dashboard ↗</button></div>`;
