@@ -6,10 +6,9 @@ Live page: https://crazythursv50.github.io/foia-dashboard-v4/
 
 ## What v4 adds
 v4 is built on the public preview site (foia-dashboard-preview), not on v2 or v3. The page code is unchanged; two files are added at the end of `index.html`: `stories.css` and `stories.js`.
-- Start page (no agency or component chosen): four storyline cards, each with one finding and a small chart, in place of the watermark.
-- After choosing an agency or component, or adding one under "Compare with": a "The four findings" section below the six summary tiles. Each unit's own numbers are drawn as a line, and the group each government-wide finding is about is a grey dashed line. Years with fewer than 20 cases are hollow points.
+- Start page (no agency or component chosen): four storyline cards in place of the watermark: Requests, Outcomes, Appeals and Backlog.
 
-The storyline cards are a draft from 2026-11-08. They will be updated to match the current storyline analysis.
+Status (2026-11-14): all four storylines are being reworked. Each card is a grey placeholder labelled "Storyline in progress" and holds no text or numbers; the section that showed the findings for a chosen agency or component is removed for now.
 
 ## Data
 `docs/data/foia.json`: built 2026-11-02 from the component-level table of foia.gov's annual FOIA reports (FY2008–FY2025). Same file as the preview site.

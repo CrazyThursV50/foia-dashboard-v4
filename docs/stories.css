@@ -31,3 +31,17 @@
 body.noq .bslib-grid[style*="17fr"] { grid-template-rows: auto minmax(3em, 1fr) !important; }
 body.noq .bslib-grid[style*="17fr"] > :first-child .card-body { padding-bottom: 0.6rem; }
 .ac-findings { margin-top: 1.6rem; border-top: 1px solid #dfe5ee; padding-top: 1rem; }
+
+/* 2026-11-14: placeholder cards for storylines still being checked (grey, blurred, no old content) */
+.story.placeholder { background: #f4f5f7; border-style: dashed; border-color: #cfd5de; }
+.story.placeholder .kicker { color: #8a8f98; }
+.story.placeholder .veil-wrap { position: relative; flex: 1; display: flex; flex-direction: column; }
+.story.placeholder .veil { filter: blur(3px) grayscale(1); opacity: 0.55; pointer-events: none; user-select: none; flex: 1; }
+.story.placeholder .sk { height: 0.62rem; background: #c3c9d2; border-radius: 4px; margin: 0.45rem 0; }
+.story.placeholder .sk.tall { height: 0.95rem; }
+.story.placeholder .w95 { width: 95%; } .story.placeholder .w90 { width: 90%; } .story.placeholder .w85 { width: 85%; }
+.story.placeholder .w80 { width: 80%; } .story.placeholder .w70 { width: 70%; } .story.placeholder .w60 { width: 60%; } .story.placeholder .w55 { width: 55%; }
+.story.placeholder .veil svg { margin: 0.5rem 0; }
+.story.placeholder .veil-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.35rem; text-align: center; padding: 0 1rem; }
+.story.placeholder .veil-label b { background: rgba(255,255,255,0.94); border: 1px solid #cfd5de; border-radius: 999px; padding: 0.3rem 0.95rem; font-size: 0.86rem; font-weight: 600; color: #4a5059; }
+.story.placeholder .veil-label span { font-size: 0.76rem; color: #55544f; background: rgba(244,245,247,0.9); padding: 0.1rem 0.45rem; border-radius: 4px; }
