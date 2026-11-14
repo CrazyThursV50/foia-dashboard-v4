@@ -178,3 +178,9 @@ html.s1m-open, html.s1m-open body { overflow: hidden; }
 .fd-has-tl.fd-start > .card-body { padding-right: 1rem; }
 /* every page: the header card is as tall as its text, so no header line is cut off (it was a fixed 17% of the page) */
 .bslib-grid[style*="17fr"] { grid-template-rows: auto minmax(3em, 1fr) !important; }
+
+/* "Clear all" on the Agency line (2026-11-14) */
+.fd-agform { position: relative; }
+.fd-clear { position: absolute; top: 0; right: 0; border: 0; background: none; padding: 0 0.1rem; font-size: 0.78rem; color: #1f4f8a; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; text-decoration-color: #b9cbe6; }
+.fd-clear:hover:not(:disabled) { text-decoration-color: #1f4f8a; }
+.fd-clear:disabled { color: #9aa3ae; text-decoration: none; cursor: default; }

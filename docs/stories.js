@@ -449,3 +449,41 @@ function storyPlaceholder(kicker) {
   new MutationObserver(scan).observe(document.documentElement, {childList: true, subtree: true});
   document.addEventListener("DOMContentLoaded", scan);
 })();
+
+/* ---------- "Clear all" for the agency and component choices (2026-11-14): resets Agency, Component and Compare with to how the
+   page opens, in one step. Years, the question and "Agencies added up in the total" are not touched. ---------- */
+(function () {
+  const formSel = lab => { const l = [...document.querySelectorAll("label")].find(x => x.textContent.trim() === lab); const f = l && l.closest("form"); return f && f.querySelector("select") };
+  const fire = (el, ...types) => types.forEach(t => el.dispatchEvent(new Event(t, {bubbles: true})));
+  const cmpBox = () => document.querySelector("div.cmp");
+  const dirty = () => { const ag = formSel("Agency"), c = cmpBox();
+    return !!(ag && ag.options.length && ag.value !== ag.options[0].value) || !!(c && Array.isArray(c.value) && c.value.length) };
+  function reset() {
+    const c = cmpBox();
+    if (c) {   // Compare with: back to an empty list and the two lists' first state
+      const as = c.querySelector("select.cmp-agency"), cs = c.querySelector("select.cmp-comp");
+      if (as) as.value = "";
+      if (cs) { cs.replaceChildren(new Option("Whole agency (all components)", "")); cs.disabled = true }
+      const chips = c.querySelector(".chips"); if (chips) chips.replaceChildren();
+      const hint = c.querySelector(".side-note"); if (hint) hint.textContent = "Choosing adds it to the comparison; × removes it.";
+      if (Array.isArray(c.value) && c.value.length) { c.value = []; fire(c, "input") }
+    }
+    const ag = formSel("Agency");   // Agency: the government total; the dashboard then resets Component itself
+    if (ag && ag.value !== ag.options[0].value) { ag.value = ag.options[0].value; fire(ag, "input", "change") }
+    setTimeout(update, 50);
+  }
+  let btn = null;
+  const update = () => { if (btn) btn.disabled = !dirty() };
+  function place() {
+    const ag = formSel("Agency"), form = ag && ag.closest("form");
+    if (!form || form.querySelector(".fd-clear")) return;
+    form.classList.add("fd-agform");
+    btn = document.createElement("button"); btn.type = "button"; btn.className = "fd-clear"; btn.textContent = "Clear all";
+    btn.title = "Reset agency, component and compare choices"; btn.addEventListener("click", reset);
+    form.appendChild(btn); update();
+  }
+  new MutationObserver(() => { place(); update() }).observe(document.documentElement, {childList: true, subtree: true});
+  document.addEventListener("input", () => setTimeout(update, 0), true);
+  document.addEventListener("change", () => setTimeout(update, 0), true);
+  document.addEventListener("click", () => setTimeout(update, 0), true);   // the × on a compare chip
+})();
