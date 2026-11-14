@@ -339,7 +339,15 @@ function storyPlaceholder(kicker) {
     if (!card.querySelector(".fd-guide")) (qh.closest(".card-body") || card).insertAdjacentHTML("beforeend", GUIDE);
     const qn = qh.querySelector(".qnum"), start = !!qn && qn.textContent.trim() === "Federal FOIA Dashboard";
     card.classList.toggle("fd-start", start);   // the start page shows only the storylines, which do not use the years: no year buttons there
-    if (!start) return;   // only the start page; question and overview headers stay as they are
+    if (!start) {   // questions 1-6: drop "who · years" under the title (the sidebar and the year buttons show both); keep coverage and one-year warnings
+      if (/^Question [1-6]$/.test(qn ? qn.textContent.trim() : "")) {
+        const sel = qh.querySelector(".sel");
+        if (sel) { [...sel.childNodes].forEach(n => { if (!(n.nodeType === 1 && n.classList.contains("warn"))) n.remove() });
+          const w = sel.querySelector(".warn"); if (w) w.textContent = w.textContent.replace(/^[\s\u00a0]*·\s*/, "");
+          if (!sel.textContent.trim()) sel.remove() }
+      }
+      return;
+    }
     qh.innerHTML = `<span class="qnum">Federal FOIA Dashboard</span>
       <div class="fd-sub">How federal agencies handle FOIA requests, from their own annual reports.</div>
       <div class="fd-open"><button type="button" class="fd-link">How to use this dashboard ↗</button></div>`;

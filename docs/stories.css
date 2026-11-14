@@ -177,3 +177,5 @@ html.s1m-open, html.s1m-open body { overflow: hidden; }
 .fd-sub { margin-top: 0.2rem; }
 .fd-start .fd-tl { display: none; }
 .fd-has-tl.fd-start > .card-body { padding-right: 1rem; }
+/* every page: the header card is as tall as its text, so no header line is cut off (it was a fixed 17% of the page) */
+.bslib-grid[style*="17fr"] { grid-template-rows: auto minmax(3em, 1fr) !important; }
