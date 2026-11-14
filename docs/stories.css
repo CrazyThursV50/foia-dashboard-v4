@@ -155,3 +155,22 @@ html.s1m-open, html.s1m-open body { overflow: hidden; }
 .fd-guide dt { margin-top: 0.45rem; }
 .fd-guide h3:not(:first-child) { margin-top: 1.1rem; }
 .fd-keep { margin-top: 0.9rem !important; }
+
+/* ---------- fiscal-year buttons from v6 (2026-11-14) ---------- */
+.fd-hidden { display: none !important; }
+.fd-has-tl { position: relative; }
+.fd-has-tl > .card-body { padding-right: calc(min(470px, 46%) + 3.4rem); }
+.fd-tl { position: absolute; top: 0.7rem; right: 3rem; width: min(470px, 46%); }
+.card[data-full-screen="true"] .fd-tl { display: none; }
+.card[data-full-screen="true"].fd-has-tl > .card-body { padding-right: 1rem; }
+@media (max-width: 900px) { .fd-tl { position: static; width: auto; margin-top: 0.5rem; } .fd-has-tl > .card-body { padding-right: 1rem; } }
+.tl-top { display: flex; align-items: center; gap: 4px; margin-bottom: 4px; }
+.tl-p { border: 1px solid #c9d6ea; background: #fff; color: #212529; border-radius: 4px; padding: 1px 8px; font-size: 0.8rem; cursor: pointer; }
+.tl-p:hover { background: #eef3fa; }
+.tl-p.on { background: #4582CC; border-color: #4582CC; color: #fff; }
+.tl-label { margin-left: auto; font-size: 0.8rem; color: #55544f; white-space: nowrap; }
+.tl-years { display: flex; gap: 1px; }
+.tl-y { flex: 1 1 0; min-width: 0; border: 0; background: #eef0f3; color: #55544f; font-size: 0.7rem; line-height: 1; padding: 5px 0; cursor: pointer; }
+.tl-y:hover { background: #cfe0f4; }
+.tl-y.on { background: #78b7e2; color: #12233b; }
+.tl-y.anchor { background: #4582CC; color: #fff; }

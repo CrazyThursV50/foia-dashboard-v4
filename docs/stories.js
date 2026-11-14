@@ -314,7 +314,7 @@ function storyPlaceholder(kicker) {
       <section><h3>Choosing what you see</h3>
         <dl><dt>Agency</dt><dd>“All agencies (government total)”, or one agency.</dd>
           <dt>Component</dt><dd>An office inside the agency you picked.</dd>
-          <dt>Fiscal years</dt><dd>A range of years. One-year views (distribution, exemptions, tables) use the last year.</dd>
+          <dt>Fiscal years (top right)</dt><dd>Pick All years, Last 10, Last 5 or the latest year; or click a first year, then a last year. Click one year twice to see only that year. One-year views (distribution, exemptions, tables) use the last year chosen.</dd>
           <dt>Compare with (up to 5)</dt><dd>Adds agencies or components to the same chart; × removes one.</dd>
           <dt>Agencies added up in the total</dt><dd>All reporting agencies (71–122 a year), or only the 70 that reported all 18 years, so a total does not grow just because more agencies report.</dd></dl>
         <p>With an agency chosen and no question, the page shows an <b>Overview</b>: the key measure of each question. Each question has three tabs:
@@ -345,6 +345,98 @@ function storyPlaceholder(kicker) {
     qh.querySelector(".fd-link").addEventListener("click", () => openGuide(card));
   }
   const scan = () => document.querySelectorAll(".qhead:not([data-guide])").forEach(fix);
+  new MutationObserver(scan).observe(document.documentElement, {childList: true, subtree: true});
+  document.addEventListener("DOMContentLoaded", scan);
+})();
+
+/* ---------- From v6 (2026-11-14): fiscal-year buttons replace the two year dropdowns, and the agency and component lists
+   start with the largest ones. Only the controls change: the dashboard's own inputs stay in charge. The year buttons set
+   the hidden "Fiscal years" dropdowns; the lists keep their options and values and are only regrouped. ---------- */
+(function () {
+  const DATA = (window.__foiaJson = window.__foiaJson || fetch("data/foia.json").then(r => r.ok ? r.json() : Promise.reject(r.status)));
+  const ev = el => el.dispatchEvent(new Event("change", {bubbles: true}));
+
+  // ---- fiscal years: presets and one button per year, as in v6. Click a year, then another; the same year twice = one year
+  const yearBox = () => document.querySelector(".years");
+  const yearSel = () => { const w = yearBox(); return w ? [...w.querySelectorAll("select")] : [] };
+  function buildYears(card) {
+    const [a] = yearSel(); if (!a || card.querySelector(".fd-tl")) return;
+    const ys = [...a.options].map(o => +o.value), first = ys[0], last = ys[ys.length - 1];   // the years in the data
+    const presets = [["All years", first, last], ["Last 10", Math.max(first, last - 9), last], ["Last 5", Math.max(first, last - 4), last], [`FY${last}`, last, last]];
+    const box = document.createElement("div"); box.className = "tl fd-tl";
+    box.innerHTML = `<div class="tl-top">${presets.map(([l, x, y]) => `<button type="button" class="tl-p" data-a="${x}" data-b="${y}">${l}</button>`).join("")}<span class="tl-label" aria-live="polite"></span></div>
+      <div class="tl-years">${ys.map(y => `<button type="button" class="tl-y" data-y="${y}" title="FY${y}">${String(y).slice(2)}</button>`).join("")}</div>`;
+    let anchor = null;   // first click of a range
+    const cur = () => { const [x, y] = yearSel().map(s => +s.value); return [Math.min(x, y), Math.max(x, y)] };
+    const draw = () => { const [lo, hi] = cur();
+      box.querySelectorAll(".tl-y").forEach(c => { const y = +c.dataset.y;
+        c.classList.toggle("on", anchor === null && y >= lo && y <= hi); c.classList.toggle("anchor", y === anchor);
+        c.classList.toggle("end", anchor === null && (y === lo || y === hi)); c.setAttribute("aria-pressed", y >= lo && y <= hi) });
+      box.querySelectorAll(".tl-p").forEach(p => p.classList.toggle("on", anchor === null && +p.dataset.a === lo && +p.dataset.b === hi));
+      box.querySelector(".tl-label").textContent = anchor !== null ? `From FY${anchor}: now click the last year` : lo === hi ? `FY${lo}` : `FY${lo}–FY${hi}` };
+    const set = (x, y) => { const [sa, sb] = yearSel(); sa.value = String(Math.min(x, y)); sb.value = String(Math.max(x, y)); ev(sb); draw() };   // the dashboard reads both
+    box.querySelectorAll(".tl-p").forEach(p => p.onclick = () => { anchor = null; set(+p.dataset.a, +p.dataset.b) });
+    box.querySelectorAll(".tl-y").forEach(c => c.onclick = () => { const y = +c.dataset.y;
+      if (anchor === null) { anchor = y; draw(); return } const x = anchor; anchor = null; set(x, y) });
+    yearSel().forEach(s => s.addEventListener("change", draw));
+    card.classList.add("fd-has-tl"); (card.querySelector(".card-body") || card).appendChild(box);
+    yearBox().classList.add("fd-hidden");   // the two dropdowns stay in the page, hidden
+    draw();
+  }
+
+  // ---- lists: the 10 agencies with the most requests in the latest year, and an agency's 5 largest components in the last
+  // year chosen (only when it has more than 6), both A-Z inside their group, as in v6. A shorter list, not a ranking.
+  function regroup(sel, groups) {
+    const keep = sel.value, frag = document.createDocumentFragment();
+    for (const [label, opts] of groups) { if (!opts.length) continue;
+      if (label == null) { opts.forEach(o => frag.appendChild(o)); continue }
+      const g = document.createElement("optgroup"); g.label = label; opts.forEach(o => g.appendChild(o)); frag.appendChild(g) }
+    sel.replaceChildren(frag); sel.value = keep; sel.dataset.grouped = "1";
+  }
+  const formSel = lab => { const l = [...document.querySelectorAll("label")].find(x => x.textContent.trim() === lab); const f = l && l.closest("form"); return f && f.querySelector("select") };
+  let TOP = null;
+  DATA.then(D => {
+    const ids = D.ids, R = D.values["01_Requests__ProcessingStatisticsReceivedQuantity"]; if (!R) return;
+    const last = Math.max(...ids.FY), rows = [];
+    ids.FY.forEach((y, i) => { if (y === last && ids.level[i] === "agency") rows.push([R[i] || 0, ids.Agency[i]]) });
+    rows.sort((a, b) => b[0] - a[0]);
+    TOP = {label: `Largest 10 (most requests in FY${last})`, names: new Set(rows.slice(0, 10).map(r => r[1]))};
+    scan();
+  }).catch(err => console.error("largest agencies:", err));
+  function groupAgencies(sel, emptyFirst) {
+    if (!TOP || sel.dataset.grouped) return;
+    const opts = [...sel.options], head = opts.filter((o, i) => emptyFirst ? o.value === "" : i === 0), rest = opts.filter(o => !head.includes(o));
+    regroup(sel, [[null, head], [TOP.label, rest.filter(o => TOP.names.has(o.textContent.trim()))], ["All other agencies", rest.filter(o => !TOP.names.has(o.textContent.trim()))]]);
+  }
+  function groupComponents(sel) {
+    if (sel.disabled || sel.dataset.grouped) return;
+    const agSel = formSel("Agency"), agency = agSel && agSel.selectedOptions[0] && agSel.selectedOptions[0].textContent.trim();
+    const hi = Math.max(...yearSel().map(s => +s.value)), opts = [...sel.options], head = [opts[0]], rest = opts.slice(1);
+    if (!agency || rest.length <= 6) { sel.dataset.grouped = "1"; return }
+    DATA.then(D => {
+      if (!sel.isConnected || sel.dataset.grouped) return;
+      const ids = D.ids, R = D.values["01_Requests__ProcessingStatisticsReceivedQuantity"], recv = new Map();
+      ids.FY.forEach((y, i) => { if (y === hi && ids.level[i] === "component" && ids.Agency[i] === agency) recv.set(`${ids.Name[i]} (${ids.Component[i]})`, R[i] || 0) });
+      const big = rest.slice().sort((a, b) => (recv.get(b.textContent.trim()) || 0) - (recv.get(a.textContent.trim()) || 0)).slice(0, 5).filter(o => (recv.get(o.textContent.trim()) || 0) > 0);
+      if (!big.length) { sel.dataset.grouped = "1"; return }
+      regroup(sel, [[null, head], [`Largest 5 (FY${hi})`, rest.filter(o => big.includes(o))], ["All other components", rest.filter(o => !big.includes(o))]]);
+    });
+  }
+  function fixNote() {   // the sidebar note named the hidden "To FY" dropdown
+    document.querySelectorAll(".sidebar p, .sidebar .side-note, p").forEach(el => {
+      if (el.dataset.fdNote || !el.textContent.includes('"To FY" year')) return;
+      const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT); let n;
+      while ((n = w.nextNode())) if (n.nodeValue.includes('"To FY" year')) n.nodeValue = n.nodeValue.replace('the "To FY" year', "the last year chosen");
+      el.dataset.fdNote = "1" });
+  }
+  function scan() {
+    fixNote();
+    const qh = document.querySelector(".qhead"), card = qh && qh.closest(".card");
+    if (card) buildYears(card);
+    const a = formSel("Agency"); if (a) groupAgencies(a, false);
+    const c = document.querySelector("select.cmp-agency"); if (c) groupAgencies(c, true);
+    const k = formSel("Component"); if (k) groupComponents(k);
+  }
   new MutationObserver(scan).observe(document.documentElement, {childList: true, subtree: true});
   document.addEventListener("DOMContentLoaded", scan);
 })();
