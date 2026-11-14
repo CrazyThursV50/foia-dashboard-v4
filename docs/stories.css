@@ -184,3 +184,4 @@ html.s1m-open, html.s1m-open body { overflow: hidden; }
 .fd-clear { position: absolute; top: 0; right: 0; border: 0; background: none; padding: 0 0.1rem; font-size: 0.78rem; color: #1f4f8a; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; text-decoration-color: #b9cbe6; }
 .fd-clear:hover:not(:disabled) { text-decoration-color: #1f4f8a; }
 .fd-clear:disabled { color: #9aa3ae; text-decoration: none; cursor: default; }
+.fd-clear, .fd-clear:disabled { background: none !important; border: 0 !important; box-shadow: none !important; }
