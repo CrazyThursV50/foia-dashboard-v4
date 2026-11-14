@@ -1,5 +1,31 @@
 /* Start page: four findings that were checked (see ~/ds701-spark/notes/37). Local preview only.
    Numbers are copied from notes/37 (computed by data/scripts/storyline_check_1108/). */
+// Facts the start page and the guide quote, read from data/foia.json the same way the dashboard's sidebar computes them
+// (index.qmd: FY_FIRST, FY_LAST, N_YEARS, PER_YEAR, N_COHORT, D.built). An element marked data-needs="k" stays hidden
+// unless fact k could be read, so a changed or broken data file hides a phrase instead of showing a wrong number.
+const FOIA_FACTS = fetch("data/foia.json").then(r => r.ok ? r.json() : Promise.reject(r.status)).then(D => {
+  const ids = D.ids, f = {}, ok = Array.isArray(ids && ids.FY) && ids.FY.length;
+  if (ok) { let lo = Infinity, hi = -Infinity; for (const y of ids.FY) { if (y < lo) lo = y; if (y > hi) hi = y }
+    if (Number.isFinite(lo) && Number.isFinite(hi)) Object.assign(f, {first: lo, last: hi, years: hi - lo + 1}) }
+  if (ok && Array.isArray(ids.level) && Array.isArray(ids.Agency)) {
+    const per = new Map(), cohort = new Set();
+    ids.FY.forEach((y, i) => { if (ids.level[i] === "agency") { per.set(y, (per.get(y) || 0) + 1); if (ids.cohort && ids.cohort[i]) cohort.add(ids.Agency[i]) } });
+    if (per.size) Object.assign(f, {perMin: Math.min(...per.values()), perMax: Math.max(...per.values())});
+    if (cohort.size && f.years) f.cohort = cohort.size;
+  }
+  if (typeof D.built === "string" && /^\d{4}-\d{2}-\d{2}$/.test(D.built)) f.built = D.built;
+  return f;
+}).catch(err => { console.error("foia.json facts:", err); return {} });
+const FACT_TEXT = {range: f => `FY${f.first}–FY${f.last}`, built: f => f.built, per: f => `${f.perMin}–${f.perMax}`, cohort: f => `${f.cohort}`, years: f => `${f.years}`};
+const FACT_NEEDS = {range: ["first", "last"], built: ["built"], per: ["perMin", "perMax"], cohort: ["cohort", "years"], years: ["years"]};
+function fillFacts(root) {   // fill <span data-fact="k">, show [data-needs="k"] only when every fact it uses was read
+  FOIA_FACTS.then(f => {
+    const have = k => FACT_NEEDS[k].every(x => f[x] != null);
+    root.querySelectorAll("[data-fact]").forEach(el => { const k = el.dataset.fact; if (have(k)) el.textContent = FACT_TEXT[k](f) });
+    root.querySelectorAll("[data-needs]").forEach(el => { el.hidden = !el.dataset.needs.split(" ").every(have) });
+  });
+}
+
 // a grey, blurred card that holds a storyline's place; no old text or numbers are kept in it
 function storyPlaceholder(kicker) {
   const el = document.createElement("article"); el.className = "story placeholder";
@@ -107,8 +133,9 @@ function storyPlaceholder(kicker) {
   function fill(es) {
     es.dataset.stories = "1"; es.classList.add("stories"); es.innerHTML = "";
     es.insertAdjacentHTML("beforeend", `<div class="stories-head"><h2>What the annual reports show</h2>
-      <p>Findings from the agencies' own FOIA reports, FY2008–FY2025. One is ready; the other three are still being checked and will appear here when they are. Pick a question on the left to explore the data yourself.</p></div>`);
+      <p>Findings from the agencies' own FOIA reports<span data-needs="range" hidden>, <span data-fact="range"></span></span>. One is ready; the other three are still being checked and will appear here when they are. Pick a question on the left to explore the data yourself.</p></div>`);
     const grid = document.createElement("div"); grid.className = "story-grid"; STORIES.forEach(s => grid.appendChild(s.placeholder ? storyPlaceholder(s.placeholder) : card(s))); es.appendChild(grid);
+    fillFacts(es);
     es.insertAdjacentHTML("beforeend", `<p class="stories-method">How these were counted: government totals add up each agency's reported total (its components plus anything not assigned to one) and match foia.gov's government-wide totals. The reports are filled in by the agencies themselves. They show what changed, not why.</p>`);
   }
   const scan = () => document.querySelectorAll(".empty-state:not([data-stories])").forEach(fill);
@@ -303,9 +330,9 @@ function storyPlaceholder(kicker) {
     <h2>How to use this dashboard</h2>
     <div class="fd-cols">
       <section><h3>What this is</h3>
-        <p>Every federal agency files an annual FOIA report. This dashboard puts the reports for FY2008–FY2025 side by side, for agencies
+        <p>Every federal agency files an annual FOIA report. This dashboard puts the reports<span data-needs="range" hidden> for <span data-fact="range"></span></span> side by side, for agencies
         and for their components: offices inside an agency, such as ICE inside DHS.</p>
-        <p>Data: foia.gov annual reports, built 2026-11-02.</p>
+        <p>Data: foia.gov annual reports<span data-needs="built" hidden>, built <span data-fact="built"></span></span>.</p>
         <h3>Three ways in</h3>
         <ol><li><b>Storylines</b>, on the start page: findings checked across all the years. “How we got here” on a card walks through each step.</li>
           <li><b>Questions 1–6</b>, on the left: Requests received &amp; processed · Response time · Backlog, staff &amp; cost · Outcomes &amp; exemptions · Appeals · Backlog vs intake. Each opens a chart.</li>
@@ -316,7 +343,7 @@ function storyPlaceholder(kicker) {
           <dt>Component</dt><dd>An office inside the agency you picked.</dd>
           <dt>Fiscal years</dt><dd>A range of years. One-year views (distribution, exemptions, tables) use the last year.</dd>
           <dt>Compare with (up to 5)</dt><dd>Adds agencies or components to the same chart; × removes one.</dd>
-          <dt>Agencies added up in the total</dt><dd>All reporting agencies (71–122 a year), or only the 70 that reported all 18 years, so a total does not grow just because more agencies report.</dd></dl>
+          <dt>Agencies added up in the total</dt><dd>All reporting agencies<span data-needs="per" hidden> (<span data-fact="per"></span> a year)</span>, or only the agencies that reported in every year<span data-needs="cohort" hidden> (<span data-fact="cohort"></span> agencies, all <span data-fact="years"></span> years)</span>, so a total does not grow just because more agencies report.</dd></dl>
         <p>With an agency chosen and no question, the page shows an <b>Overview</b>: the key measure of each question. Each question has three tabs:
           <b>Chart</b>, <b>Tables</b> (the numbers in the chart, related report tables, all agencies in one year) and <b>How the comparison is made</b>.</p></section>
       <section><h3>Words to know</h3>
@@ -336,13 +363,14 @@ function storyPlaceholder(kicker) {
     qh.dataset.guide = "1";
     const card = qh.closest(".card"); if (!card) return;
     card.classList.add("fd-card");
-    if (!card.querySelector(".fd-guide")) (qh.closest(".card-body") || card).insertAdjacentHTML("beforeend", GUIDE);
+    if (!card.querySelector(".fd-guide")) { (qh.closest(".card-body") || card).insertAdjacentHTML("beforeend", GUIDE); fillFacts(card.querySelector(".fd-guide")) }
     const qn = qh.querySelector(".qnum");
     if (!qn || qn.textContent.trim() !== "Federal FOIA Dashboard") return;   // only the start page; question headers stay as they are
     qh.innerHTML = `<span class="qnum">Federal FOIA Dashboard</span> How federal agencies handle FOIA requests, from their own annual reports.
-      <div class="sel">FY2008–FY2025 · agencies and their components · data from foia.gov. Start with a storyline below, or pick a question on the left.</div>
+      <div class="sel"><span data-needs="range" hidden><span data-fact="range"></span> · </span>agencies and their components · data from foia.gov. Start with a storyline below, or pick a question on the left.</div>
       <div class="fd-open"><button type="button" class="fd-link">How to use this dashboard ↗</button></div>`;
     qh.querySelector(".fd-link").addEventListener("click", () => openGuide(card));
+    fillFacts(qh);
   }
   const scan = () => document.querySelectorAll(".qhead:not([data-guide])").forEach(fix);
   new MutationObserver(scan).observe(document.documentElement, {childList: true, subtree: true});
