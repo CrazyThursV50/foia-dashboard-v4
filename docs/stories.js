@@ -1,51 +1,44 @@
-/* Start page: four findings that were checked (see ~/ds701-spark/notes/37). Local preview only.
-   Numbers are copied from notes/37 (computed by data/scripts/storyline_check_1108/). */
+/* Start page: storyline cards. 2026-11-14: only Storyline 1 (full releases) is final; Requests, Appeals and Backlog are
+   placeholders until their storylines are settled. Storyline 1 numbers: final S1 notebook (11/12), rechecked against
+   data/foia.json on 11/14 (agency totals, DHS and NARA left out; all 18 years of the three lines match). */
+
+// a grey, blurred card that holds a storyline's place; no old text or numbers are kept in it
+function storyPlaceholder(kicker) {
+  const el = document.createElement("article"); el.className = "story placeholder";
+  el.setAttribute("aria-label", `${kicker}: storyline in progress`);
+  el.innerHTML = `<div class="kicker">${kicker}</div>
+    <div class="veil-wrap">
+      <div class="veil" aria-hidden="true">
+        <div class="sk tall w80"></div><div class="sk tall w55"></div>
+        <div class="sk w95"></div><div class="sk w90"></div><div class="sk w70"></div>
+        <svg viewBox="0 0 520 180"><g stroke="#c9ced6" stroke-width="1"><line x1="34" x2="392" y1="10" y2="10"/><line x1="34" x2="392" y1="84" y2="84"/><line x1="34" x2="392" y1="158" y2="158"/></g>
+          <path d="M34,122 L80,112 L126,118 L172,96 L218,90 L264,70 L310,76 L356,52 L392,44" fill="none" stroke="#9aa3ae" stroke-width="3"/>
+          <path d="M34,58 L80,66 L126,58 L172,74 L218,82 L264,96 L310,92 L356,110 L392,118" fill="none" stroke="#b8bec7" stroke-width="3"/></svg>
+        <div class="sk w85"></div><div class="sk w60"></div>
+      </div>
+      <div class="veil-label"><b>Storyline in progress</b><span>Still being checked. It will appear here when it is ready.</span></div>
+    </div>`;
+  return el;
+}
 (function () {
   const YEARS = Array.from({length: 18}, (_, i) => 2008 + i);
   const C = {blue: "#4582cc", purple: "#8c3a91", gold: "#d4a92c", ink: "#333C47", muted: "#6c6b66", grid: "#e9ecf1"};
 
   const STORIES = [
+    {placeholder: "Requests"},
     {
       kicker: "Outcomes", q: 4, qlabel: "Outcomes & exemptions",
-      title: "Fewer requesters get everything they asked for",
-      body: "Outside DHS and NARA, the share of processed requests released in full fell from 50% in FY2008 to 21% in FY2025. Partial releases rose from 10% to 32%. The share where no records were found stayed around 12–15% every year.",
-      foot: "DHS and NARA are left out. DHS's “no records” share jumped after FY2021 and has not been checked yet; NARA's categories swing from year to year. Share of all processed requests.",
+      title: "A shrinking share of requests is released in full",
+      body: "Outside DHS and NARA, the share of processed requests released in full fell from 50.0% in FY2008 to 21.4% in FY2025. The fall holds with any single agency or component left out, and it comes mostly from agencies' own shares falling: from FY2017 to FY2025, 87 of 107 agencies released in full less often. Partial releases rose from 10.2% to 32.3%; since FY2017 that rise is all one component, VA's Veterans Benefits Administration (VBA).",
+      foot: "Without VBA, partial releases fell 2.8 points in FY2017–25, and most of the full-release fall (8.7 of 12.7 points) is more requests closed without any records being processed. DHS and NARA are left out: DHS closes a growing share of all requests (18.9% in FY2008, 60.8% in FY2025) and releases in full far less often; NARA's most common outcome changes from year to year. Share of all processed requests.",
       yMax: 60, unit: "%",
       series: [
         {name: "Released in full", color: C.blue, v: [50.0,45.5,47.0,47.1,47.3,47.3,42.0,39.7,39.3,38.0,40.1,37.1,36.8,32.9,30.2,29.7,24.3,21.4]},
         {name: "Partly released", color: C.purple, v: [10.2,13.5,16.0,18.9,18.2,17.9,21.2,22.7,23.0,23.3,23.0,24.4,22.8,23.8,23.1,27.9,31.7,32.3]},
         {name: "No records found", color: C.gold, v: [14.7,14.2,11.9,12.0,12.5,11.7,12.5,13.4,12.7,13.6,13.6,13.5,13.1,13.5,14.9,13.9,13.2,13.5]}]
     },
-    {
-      kicker: "Exemptions", q: 4, qlabel: "Outcomes & exemptions",
-      title: "Privacy exemptions are cited more, but rarely to withhold everything",
-      body: "Privacy exemptions (Ex. 6 and 7(C)) went from 44% of all exemption citations in FY2008 to 61% in FY2025. Yet among requests that were partly released or fully denied on exemptions, full denials fell from 18% to 8%. Most still got some records.",
-      foot: "Exemption counts are citations, not requests: one request can cite several exemptions. All agencies.",
-      yMax: 70, unit: "%",
-      series: [
-        {name: "Privacy share of exemption citations", color: C.blue, v: [43.9,44.2,46.1,51.3,52.4,51.6,53.1,57.4,57.8,53.2,56.1,55.1,56.8,55.7,56.4,59.5,63.2,61.1]},
-        {name: "Full denials (of partly released + fully denied)", color: C.purple, v: [17.7,13.2,16.6,15.0,13.3,16.9,15.4,10.9,13.3,11.3,10.0,8.8,10.5,10.9,10.1,8.6,8.1,7.7]}]
-    },
-    {
-      kicker: "Appeals", q: 5, qlabel: "Appeals",
-      title: "Few requests are appealed; outside DHS, about a quarter of appeals succeed",
-      body: "Each year only 1.3 to 2.0 appeals are filed for every 100 processed requests. Outside DHS, 21–27% of closed appeals end with the decision fully or partly reversed or sent back. At DHS the rate was 48–76% in FY2009–23, then 37–39% in FY2024–25.",
-      foot: "“Reversed” includes sending the request back for another look; it does not mean the requester got the records. DHS also closed more appeals “for other reasons” in FY2024–25. Share of all closed appeals.",
-      yMax: 80, unit: "%",
-      series: [
-        {name: "Agencies other than DHS", color: C.blue, v: [21.4,24.4,25.7,24.9,26.9,23.5,23.1,22.2,25.9,23.5,22.4,23.2,22.9,20.6,23.7,26.0,27.1,27.3]},
-        {name: "DHS", color: C.purple, v: [26.6,65.5,75.7,55.8,48.2,53.9,54.0,50.9,50.2,53.4,57.6,54.6,62.6,54.2,54.2,48.4,39.0,36.7]}],
-      extra: {name: "Appeals per 100 processed requests (all agencies)", v: [1.37,1.59,1.82,1.70,1.79,1.77,1.96,1.90,1.99,1.77,1.88,1.75,1.93,1.84,1.76,1.29,1.34,1.96], fmt: x => x.toFixed(2)}
-    },
-    {
-      kicker: "Backlog", q: 6, qlabel: "Backlog vs intake",
-      title: "Outside the immigration agencies, backlogs stepped up after FY2020",
-      body: "Leaving out USCIS, CBP, ICE and EOIR, the year-end backlog equaled 9–19% of a year's requests in FY2008–19 and 22–30% in FY2020–25. On average FY2020–25 is about 9 points higher than FY2014–19.",
-      foot: "Dashed lines: averages for FY2014–19 (17%) and FY2020–25 (26%). In FY2020 this group's requests fell 17% while its backlog rose 22%; the reports do not say why. Year-end backlog as a share of requests received that year.",
-      yMax: 30, unit: "%",
-      series: [{name: "Backlog as % of requests received", color: C.blue, v: [12.9,14.5,13.1,9.4,10.6,10.5,15.2,18.0,16.9,15.8,17.1,18.7,27.6,25.9,27.8,23.2,21.9,29.9]}],
-      avgs: [{from: 2014, to: 2019, label: "FY2014–19 avg 17%"}, {from: 2020, to: 2025, label: "FY2020–25 avg 26%"}]
-    }
+    {placeholder: "Appeals"},
+    {placeholder: "Backlog"}
   ];
 
   const W = 520, H = 180, M = {l: 34, r: 128, t: 10, b: 22};
@@ -115,9 +108,9 @@
   function fill(es) {
     es.dataset.stories = "1"; es.classList.add("stories"); es.innerHTML = "";
     es.insertAdjacentHTML("beforeend", `<div class="stories-head"><h2>What the annual reports show</h2>
-      <p>Four findings from the agencies' own FOIA reports, FY2008–FY2025. Each one holds in every year, and still holds if any single agency or component is left out. Pick a question on the left to explore the data yourself.</p></div>`);
-    const grid = document.createElement("div"); grid.className = "story-grid"; STORIES.forEach(s => grid.appendChild(card(s))); es.appendChild(grid);
-    es.insertAdjacentHTML("beforeend", `<p class="stories-method">How these were counted: government totals add up component rows plus agencies that have no components, and match foia.gov's government-wide totals. The reports are filled in by the agencies themselves, and some numbers are revised the next year. They show what changed, not why.</p>`);
+      <p>Findings from the agencies' own FOIA reports, FY2008–FY2025. One is ready; the other three are still being checked and will appear here when they are. Pick a question on the left to explore the data yourself.</p></div>`);
+    const grid = document.createElement("div"); grid.className = "story-grid"; STORIES.forEach(s => grid.appendChild(s.placeholder ? storyPlaceholder(s.placeholder) : card(s))); es.appendChild(grid);
+    es.insertAdjacentHTML("beforeend", `<p class="stories-method">How these were counted: government totals add up each agency's reported total (its components plus anything not assigned to one) and match foia.gov's government-wide totals. The reports are filled in by the agencies themselves. They show what changed, not why.</p>`);
   }
   const scan = () => document.querySelectorAll(".empty-state:not([data-stories])").forEach(fill);
   new MutationObserver(scan).observe(document.documentElement, {childList: true, subtree: true});
@@ -139,11 +132,8 @@
       REC: find("01_", "Received"), T8: find("08_", "Total"), RV: find("08_", "Reversed"), PA: find("08_", "Partial"), BL: find("26_", "BackloggedRequest")};
     return d;
   }));
-  const REF = {  // government-wide finding lines, from notes/37
-    f1: {name: "Outside DHS and NARA", v: [50.0,45.5,47.0,47.1,47.3,47.3,42.0,39.7,39.3,38.0,40.1,37.1,36.8,32.9,30.2,29.7,24.3,21.4]},
-    f2: {name: "All agencies", v: [17.7,13.2,16.6,15.0,13.3,16.9,15.4,10.9,13.3,11.3,10.0,8.8,10.5,10.9,10.1,8.6,8.1,7.7]},
-    f3: {name: "Agencies other than DHS", v: [21.4,24.4,25.7,24.9,26.9,23.5,23.1,22.2,25.9,23.5,22.4,23.2,22.9,20.6,23.7,26.0,27.1,27.3]},
-    f4: {name: "Outside USCIS, CBP, ICE, EOIR", v: [12.9,14.5,13.1,9.4,10.6,10.5,15.2,18.0,16.9,15.8,17.1,18.7,27.6,25.9,27.8,23.2,21.9,29.9]}};
+  const REF = {  // government-wide line of Storyline 1 (final, 11/12); the other storylines are placeholders for now
+    f1: {name: "Outside DHS and NARA", v: [50.0,45.5,47.0,47.1,47.3,47.3,42.0,39.7,39.3,38.0,40.1,37.1,36.8,32.9,30.2,29.7,24.3,21.4]}};
 
   // the selection, read from the dashboard's own inputs (their .value is the same value the dashboard uses)
   const formOf = lab => { const l = [...document.querySelectorAll("label")].find(x => x.textContent.trim() === lab); return l && l.closest("form") };
@@ -222,11 +212,8 @@
     const isDHS = u.agency === "Department of Homeland Security", isNARA = u.agency.startsWith("National Archives");
     const imm = (isDHS && ["USCIS", "CBP", "ICE"].includes(u.code)) || (u.agency === "Department of Justice" && u.code === "EOIR");
     const who = u.isComp && isDHS ? `${u.label} (part of DHS)` : u.label;
-    if (f === "f1" && isDHS) return [who, "the DHS “no records” share jumped after FY2021 and has not been checked yet"];
-    if (f === "f1" && isNARA) return [who, "NARA's categories swing from year to year"];
-    if (f === "f3" && isDHS) return [who, "DHS as a whole reverses far more appeals than other agencies"];
-    if (f === "f4" && imm) return [who, "it is one of the four immigration units"];
-    if (f === "f4" && !u.isComp && (isDHS || u.agency === "Department of Justice")) return [`${u.label} (whole agency)`, `its total includes ${isDHS ? "USCIS, CBP and ICE" : "EOIR"}`];
+    if (f === "f1" && isDHS) return [who, "DHS closes a growing share of all requests and releases in full far less often, so it is looked at on its own"];
+    if (f === "f1" && isNARA) return [who, "NARA's most common outcome changes from year to year"];
     return null;
   }
   function card(f, kicker, heading, units, key, extras) {
@@ -243,14 +230,13 @@
     }
     const outs = units.map(u => outOfGroup(f, u)).filter(Boolean);
     const outText = outs.length ? `Not in this finding's group: ${outs.map(([w, why]) => `${w}, because ${why}`).join("; ")}. ` : "";
-    const base = f === "f3" ? "Counted out of all closed appeals, including those closed for other reasons; tile 5 above counts only appeals decided on the merits, so its number is higher. " : "";
     el.innerHTML = `<div class="kicker">${kicker}</div><h3>${heading}</h3><p class="body">${body}</p>
       <div class="legend">${units.map(u => `<span><i style="background:${u.color}"></i>${u.label}</span>`).join("")}<span><i style="background:none;border-top:2px dashed ${C.ref};height:0"></i>${ref.name} (the finding's group)</span></div>`;
     el.appendChild(chart(lines, ref, heading));
     const cell = p => !p || p.v == null ? "–" : `${pct(p.v)}${p.n < MIN_N ? "*" : ""}`;
     const extraCols = units.length === 1 ? extras : [];
     const rows = YEARS.map((yr, i) => `<tr><td>FY${yr}</td>${units.map(u => `<td>${cell(u.S[key][i])}</td>`).join("")}${extraCols.map(e => `<td>${cell(units[0].S[e.key][i])}</td>`).join("")}<td>${ref.v[i]}%</td></tr>`).join("");
-    el.insertAdjacentHTML("beforeend", `<p class="foot">${outText}${base}Hollow points (and * in the table): fewer than ${MIN_N} cases that year. The finding was checked for the group, not for single agencies or components.</p>
+    el.insertAdjacentHTML("beforeend", `<p class="foot">${outText}Hollow points (and * in the table): fewer than ${MIN_N} cases that year. The finding was checked for the group, not for single agencies or components.</p>
       <div class="actions"><details><summary>Numbers</summary><table><tr><th>Year</th>${units.map(u => `<th>${u.label}</th>`).join("")}${extraCols.map(e => `<th>${e.h}</th>`).join("")}<th>Group</th></tr>${rows}</table></details></div>`);
     return el;
   }
@@ -264,15 +250,13 @@
     units.forEach(u => { u.label = shorts.filter(s => s === u.short).length > 1 ? `${u.agency} › ${u.short}` : u.short; u.S = compute(d, u.rows) });
     const one = units.length === 1, title = one ? units[0].full : units.map(u => u.label).join(", ");
     const sec = document.createElement("section"); sec.className = "ac-findings";
-    sec.innerHTML = `<div class="stories-head"><h2>The four findings — ${title}</h2><p>${one ? `Blue: ${units[0].label}'s own numbers.` : "Colored lines: each unit's own numbers, same colors as above."} Grey dashed: the group each government-wide finding is about. The findings were checked for those groups; for one agency or component the numbers are just its own record, not a test of the finding.</p></div>`;
+    sec.innerHTML = `<div class="stories-head"><h2>Findings — ${title}</h2><p>${one ? `Blue: ${units[0].label}'s own numbers.` : "Colored lines: each unit's own numbers, same colors as above."} Grey dashed: the group the government-wide finding is about. The finding was checked for that group; for one agency or component the numbers are just its own record, not a test of the finding. The other three storylines are still being checked.</p></div>`;
     const grid = document.createElement("div"); grid.className = "story-grid";
-    grid.appendChild(card("f1", "1 · Outcomes", "Released in full, share of processed requests", units, "f1",
+    grid.appendChild(storyPlaceholder("Requests"));
+    grid.appendChild(card("f1", "Outcomes", "Released in full, share of processed requests", units, "f1",
       [{key: "f1pg", h: "Partly", say: l => `In FY${l[0]}: partly released ${pct(l[1])}.`}, {key: "f1nr", h: "No records", say: l => `No records found ${pct(l[1])}.`}]));
-    grid.appendChild(card("f2", "2 · Exemptions", "Full denials, share of partly released + fully denied requests", units, "f2",
-      [{key: "f2priv", h: "Privacy share", say: l => `Privacy exemptions were ${pct(l[1])} of its exemption citations in FY${l[0]}.`}]));
-    grid.appendChild(card("f3", "3 · Appeals", "Appeals reversed fully or partly, share of closed appeals", units, "f3",
-      [{key: "f3per", h: "Appeals per 100 processed", say: l => `It received ${r1(l[1])} appeals per 100 processed requests in FY${l[0]}.`}]));
-    grid.appendChild(card("f4", "4 · Backlog", "Year-end backlog, share of requests received", units, "f4", []));
+    grid.appendChild(storyPlaceholder("Appeals"));
+    grid.appendChild(storyPlaceholder("Backlog"));
     sec.appendChild(grid); ov.appendChild(sec);
   }
   const scan = () => document.querySelectorAll(".overview:not([data-acf])").forEach(fillAC);
