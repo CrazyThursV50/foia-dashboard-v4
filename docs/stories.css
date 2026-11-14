@@ -158,7 +158,6 @@ html.s1m-open, html.s1m-open body { overflow: hidden; }
 
 /* ---------- fiscal-year buttons from v6 (2026-11-14) ---------- */
 .fd-hidden { display: none !important; }
-.fd-has-tl { position: relative; }
 .fd-has-tl > .card-body { padding-right: calc(min(470px, 46%) + 3.4rem); }
 .fd-tl { position: absolute; top: 0.7rem; right: 3rem; width: min(470px, 46%); }
 .card[data-full-screen="true"] .fd-tl { display: none; }
