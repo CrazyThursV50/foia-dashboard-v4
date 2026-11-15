@@ -1,3 +1,5 @@
+// renamed agencies: the current name first, the former one in brackets (same rule as the dashboard's own code)
+function fdAgency(a) { return a === "Department of Defense" || a === "Department of War" ? "Department of War (Department of Defense)" : a }
 /* Start page: four findings that were checked (see ~/ds701-spark/notes/37). Local preview only.
    Numbers are copied from notes/37 (computed by data/scripts/storyline_check_1108/). */
 // a grey, blurred card that holds a storyline's place; no old text or numbers are kept in it
@@ -426,7 +428,8 @@ function storyPlaceholder(kicker) {
    start with the largest ones. Only the controls change: the dashboard's own inputs stay in charge. The year buttons set
    the hidden "Fiscal years" dropdowns; the lists keep their options and values and are only regrouped. ---------- */
 (function () {
-  const DATA = (window.__foiaJson = window.__foiaJson || fetch("data/foia.json").then(r => r.ok ? r.json() : Promise.reject(r.status)));
+  const DATA = (window.__foiaJson = window.__foiaJson || fetch("data/foia.json").then(r => r.ok ? r.json() : Promise.reject(r.status))
+    .then(D => { D.ids.Agency = D.ids.Agency.map(fdAgency); return D }));
   const ev = el => el.dispatchEvent(new Event("change", {bubbles: true}));
 
   // ---- fiscal years: presets and one button per year, as in v6. Click a year, then another; the same year twice = one year
@@ -613,14 +616,14 @@ function storyPlaceholder(kicker) {
       await waitFor(() => document.querySelector(".qpick") && selOf("Agency") && document.querySelectorAll(".years select").length === 2);
       const ys = [...document.querySelectorAll(".years select")], f = +p.get("from"), t = +p.get("to");
       if (f && t && [...ys[0].options].some(o => +o.value === f) && [...ys[1].options].some(o => +o.value === t)) { ys[0].value = String(f); ys[1].value = String(t); fire(ys[1], "change"); await sleep(400) }
-      const agName = p.get("agency"), ag = selOf("Agency");
+      const agName = fdAgency(p.get("agency")), ag = selOf("Agency");   // links made before a rename still open
       if (agName) { const o = [...ag.options].find(o => o.textContent.trim() === agName);
         if (o) { ag.value = o.value; fire(ag, "input", "change");
           const comp = p.get("comp");
           if (comp) { const cs = await waitFor(() => { const s = selOf("Component"); return s && !s.disabled && [...s.options].some(o => o.textContent.trim() === comp) && s });
             if (cs) { cs.value = [...cs.options].find(o => o.textContent.trim() === comp).value; fire(cs, "input", "change") } }
           await sleep(500) } }
-      const keys = (p.get("with") || "").split("~").filter(Boolean).slice(0, 5);
+      const keys = (p.get("with") || "").split("~").filter(Boolean).slice(0, 5).map(k => { const x = k.split("|"); x[1] = fdAgency(x[1]); return x.join("|") });
       // in the link's order; a component's agency is added and then replaced by the component, so a whole agency listed before
       // one of its own components drops out there, and is added again at the end (the only case where the order can change)
       const cmpNow = () => { const c = document.querySelector("div.cmp"); return c && Array.isArray(c.value) ? c.value : [] };
