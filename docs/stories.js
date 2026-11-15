@@ -489,6 +489,29 @@ function storyPlaceholder(kicker) {
       regroup(sel, [[null, head], [`Largest 5 (FY${hi})`, rest.filter(o => big.includes(o))], ["All other components", rest.filter(o => !big.includes(o))]]);
     });
   }
+  // the same grouping for the component list under "Compare with". That list is rebuilt by the dashboard each time its agency
+  // changes (values are entity keys "C|agency|key"); the year can change later, so it is regrouped when the last year changes.
+  function groupCmpComponents(sel) {
+    const ag = document.querySelector("select.cmp-agency"), agency = ag && ag.value;
+    if (!agency || sel.disabled) return;
+    const hi = Math.max(...yearSel().map(s => +s.value)), sig = `${agency}|${hi}`, grouped = !!sel.querySelector("optgroup");
+    if (grouped && sel.dataset.fdSig === sig) return;                        // grouped for this agency and year
+    if (!grouped && (sel.dataset.fdFlat === sig || sel.dataset.fdWait === sig)) return;   // nothing to group, or on its way
+    const opts = [...sel.options], head = [opts[0]], rest = opts.slice(1).sort((x, y) => x.textContent.localeCompare(y.textContent));
+    const flat = () => { sel.dataset.fdFlat = sig; if (grouped) regroup(sel, [[null, head], [null, rest]]) };
+    if (rest.length <= 6) return flat();
+    sel.dataset.fdWait = sig;
+    DATA.then(D => {
+      delete sel.dataset.fdWait;
+      if (!sel.isConnected || ag.value !== agency || !opts.every(o => sel.contains(o))) return;   // list rebuilt meanwhile: the next scan does it
+      const ids = D.ids, R = D.values["01_Requests__ProcessingStatisticsReceivedQuantity"], recv = new Map();
+      ids.FY.forEach((y, i) => { if (y === hi && ids.level[i] === "component" && ids.Agency[i] === agency) recv.set(`C|${agency}|${ids.Key[i]}`, R[i] || 0) });
+      const big = rest.slice().sort((x, y) => (recv.get(y.value) || 0) - (recv.get(x.value) || 0)).slice(0, 5).filter(o => (recv.get(o.value) || 0) > 0);
+      if (!big.length) return flat();
+      delete sel.dataset.fdFlat; sel.dataset.fdSig = sig;
+      regroup(sel, [[null, head], [`Largest 5 (FY${hi})`, rest.filter(o => big.includes(o))], ["All other components", rest.filter(o => !big.includes(o))]]);
+    });
+  }
   function fixNote() {   // the sidebar note named the hidden "To FY" dropdown
     document.querySelectorAll(".sidebar p, .sidebar .side-note, p").forEach(el => {
       if (el.dataset.fdNote || !el.textContent.includes('"To FY" year')) return;
@@ -503,6 +526,7 @@ function storyPlaceholder(kicker) {
     const a = formSel("Agency"); if (a) groupAgencies(a, false);
     const c = document.querySelector("select.cmp-agency"); if (c) groupAgencies(c, true);
     const k = formSel("Component"); if (k) groupComponents(k);
+    const cc = document.querySelector("select.cmp-comp"); if (cc) groupCmpComponents(cc);
   }
   new MutationObserver(scan).observe(document.documentElement, {childList: true, subtree: true});
   document.addEventListener("DOMContentLoaded", scan);
