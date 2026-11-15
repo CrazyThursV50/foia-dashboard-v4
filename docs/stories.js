@@ -545,3 +545,82 @@ function storyPlaceholder(kicker) {
   document.addEventListener("change", () => setTimeout(update, 0), true);
   document.addEventListener("click", () => setTimeout(update, 0), true);   // the × on a compare chip
 })();
+
+/* ---------- The view in the page address, and "Copy link to this view" (from v3, 2026-11-14). The address records the question,
+   agency, component, years, compare list, the two radio choices and the Explore measure; opening such a link sets the same
+   controls again, in order, the way a user would. The dashboard's own code is not changed. ---------- */
+(function () {
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  const waitFor = async (f, ms = 8000) => { for (let t = 0; t < ms; t += 100) { const v = f(); if (v) return v; await sleep(100) } return null };
+  const formOf = lab => { const l = [...document.querySelectorAll("label")].find(x => x.textContent.trim() === lab); return l && l.closest("form") };
+  const selOf = lab => { const f = formOf(lab); return f && f.querySelector("select") };
+  const fire = (el, ...ts) => ts.forEach(t => el.dispatchEvent(new Event(t, {bubbles: true})));
+  const checkedText = lab => { const f = formOf(lab), i = f && f.querySelector("input:checked"); return i ? i.closest("label").textContent.trim() : null };
+  let restoring = false, timer = null;
+  function read() {
+    const p = new URLSearchParams(), qp = document.querySelector(".qpick"), q = qp ? +qp.value : 0;
+    if (q) p.set("q", q);
+    const ag = selOf("Agency"), total = !ag || ag.value === ag.options[0].value;
+    if (!total) p.set("agency", ag.selectedOptions[0].textContent.trim());
+    const cs = selOf("Component");
+    if (!total && cs && !cs.disabled && cs.value !== cs.options[0].value) p.set("comp", cs.selectedOptions[0].textContent.trim());
+    const ys = [...document.querySelectorAll(".years select")];
+    if (ys.length === 2) { const v = ys.map(s => +s.value), all = [...ys[0].options].map(o => +o.value), lo = Math.min(...v), hi = Math.max(...v);
+      if (lo !== all[0] || hi !== all[all.length - 1]) { p.set("from", lo); p.set("to", hi) } }
+    const cmp = document.querySelector("div.cmp"); if (cmp && Array.isArray(cmp.value) && cmp.value.length) p.set("with", cmp.value.join("~"));
+    if ((checkedText("Agencies added up in the total") || "").startsWith("Only")) p.set("scope", "same");
+    if (q === 5 && checkedText("Reversal rate out of") === "All processed appeals") p.set("base", "all");
+    if (q === 7) { const ty = selOf("Data type"), me = selOf("Measure");
+      if (ty) p.set("type", ty.selectedOptions[0].textContent.trim().slice(0, 2)); if (me) p.set("m", me.selectedOptions[0].textContent.trim()) }
+    return p;
+  }
+  function sync() { if (restoring) return; const s = read().toString(); history.replaceState(null, "", s ? `?${s}` : location.pathname) }
+  const later = () => { clearTimeout(timer); timer = setTimeout(sync, 400) };
+  ["input", "change", "click"].forEach(t => document.addEventListener(t, later, true));
+  async function restore(p) {
+    restoring = true;
+    try {
+      await waitFor(() => document.querySelector(".qpick") && selOf("Agency") && document.querySelectorAll(".years select").length === 2);
+      const ys = [...document.querySelectorAll(".years select")], f = +p.get("from"), t = +p.get("to");
+      if (f && t && [...ys[0].options].some(o => +o.value === f) && [...ys[1].options].some(o => +o.value === t)) { ys[0].value = String(f); ys[1].value = String(t); fire(ys[1], "change"); await sleep(400) }
+      const agName = p.get("agency"), ag = selOf("Agency");
+      if (agName) { const o = [...ag.options].find(o => o.textContent.trim() === agName);
+        if (o) { ag.value = o.value; fire(ag, "input", "change");
+          const comp = p.get("comp");
+          if (comp) { const cs = await waitFor(() => { const s = selOf("Component"); return s && !s.disabled && [...s.options].some(o => o.textContent.trim() === comp) && s });
+            if (cs) { cs.value = [...cs.options].find(o => o.textContent.trim() === comp).value; fire(cs, "input", "change") } }
+          await sleep(500) } }
+      const keys = (p.get("with") || "").split("~").filter(Boolean).slice(0, 5);
+      // in the link's order; a component's agency is added and then replaced by the component, so a whole agency listed before
+      // one of its own components drops out there, and is added again at the end (the only case where the order can change)
+      const cmpNow = () => { const c = document.querySelector("div.cmp"); return c && Array.isArray(c.value) ? c.value : [] };
+      for (const k of [...keys, ...keys.filter(k => k.startsWith("A|"))]) {
+        if (cmpNow().includes(k)) continue;
+        const [lv, a] = k.split("|"), as = await waitFor(() => document.querySelector("select.cmp-agency"));
+        if (!as || ![...as.options].some(o => o.value === a)) continue;
+        as.value = a; fire(as, "change"); await sleep(250);
+        if (lv === "C") { const cs = await waitFor(() => { const s = document.querySelector("select.cmp-comp"); return s && [...s.options].some(o => o.value === k) && s });
+          if (cs) { cs.value = k; fire(cs, "change"); await sleep(250) } }
+      }
+      if (p.get("scope") === "same") { const f2 = formOf("Agencies added up in the total"), i = f2 && [...f2.querySelectorAll("input")].find(x => x.closest("label").textContent.trim().startsWith("Only")); if (i) { i.click(); await sleep(300) } }
+      const q = +p.get("q");
+      if (q) { const b = document.querySelector(`.qbtn[data-id="${q}"]`); if (b && +document.querySelector(".qpick").value !== q) b.click();
+        if (q === 5 && p.get("base") === "all") { const f3 = await waitFor(() => formOf("Reversal rate out of")); const i = f3 && [...f3.querySelectorAll("input")].find(x => x.closest("label").textContent.trim() === "All processed appeals"); if (i) i.click() }
+        if (q === 7) { const ty = p.get("type"), m = p.get("m");
+          if (ty) { const s = await waitFor(() => selOf("Data type")); const o = s && [...s.options].find(o => o.textContent.trim().startsWith(ty)); if (o && s.value !== o.value) { s.value = o.value; fire(s, "input", "change"); await sleep(500) } }
+          if (m) { const s = await waitFor(() => { const x = selOf("Measure"); return x && [...x.options].some(o => o.textContent.trim() === m) && x }); if (s) { s.value = [...s.options].find(o => o.textContent.trim() === m).value; fire(s, "input", "change") } } } }
+      await sleep(600);
+    } finally { restoring = false; sync() }
+  }
+  function button() {   // under the year buttons, as in v3
+    const tl = document.querySelector(".fd-tl"); if (!tl || tl.querySelector(".fd-copy")) return;
+    const b = document.createElement("button"); b.type = "button"; b.className = "fd-copy"; b.textContent = "Copy link to this view";
+    b.addEventListener("click", async () => { sync();
+      try { await navigator.clipboard.writeText(location.href); b.textContent = "Link copied" } catch (e) { b.textContent = "Copy it from the address bar" }
+      setTimeout(() => { b.textContent = "Copy link to this view" }, 1800) });
+    const row = document.createElement("div"); row.className = "fd-linkrow"; row.appendChild(b); tl.appendChild(row);
+  }
+  new MutationObserver(button).observe(document.documentElement, {childList: true, subtree: true});
+  const start = new URLSearchParams(location.search);
+  if ([...start.keys()].length) restore(start);
+})();

@@ -191,3 +191,9 @@ html.s1m-open, html.s1m-open body { overflow: hidden; }
 .fd-credit a { color: inherit !important; text-decoration: underline; text-decoration-color: rgba(255,255,255,0.55); text-underline-offset: 3px; }
 .fd-credit a:hover { text-decoration-color: #fff; }
 @media (max-width: 760px) { .fd-credit { display: none; } }
+
+/* CSV download link (from v3) and "Copy link to this view" (2026-11-14) */
+.csv { font-weight: 400; font-size: 0.78rem; margin-left: 0.5em; }
+.fd-linkrow { display: flex; justify-content: flex-end; margin-top: 6px; }
+.fd-copy { border: 1px solid #c9d6ea; background: #fff; color: #1f3d66; border-radius: 4px; padding: 1px 10px; font-size: 0.8rem; cursor: pointer; }
+.fd-copy:hover { background: #eef3fa; }
