@@ -197,3 +197,7 @@ html.s1m-open, html.s1m-open body { overflow: hidden; }
 .fd-linkrow { display: flex; justify-content: flex-end; margin-top: 6px; }
 .fd-copy { border: 1px solid #c9d6ea; background: #fff; color: #1f3d66; border-radius: 4px; padding: 1px 10px; font-size: 0.8rem; cursor: pointer; }
 .fd-copy:hover { background: #eef3fa; }
+
+/* Tables › Numbers in the chart, with "Compare with": the comparison table to the right of the selection's tables (2026-11-14) */
+.tpair { display: flex; flex-wrap: wrap; gap: 0 2.5rem; align-items: flex-start; }
+.tpair > div { min-width: 0; max-width: 100%; }
