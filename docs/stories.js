@@ -375,8 +375,9 @@ function storyPlaceholder(kicker) {
           <dt>Fiscal years (top right, once you pick a question or an agency)</dt><dd>Pick All years, Last 10, Last 5 or the latest year; or click a first year, then a last year. Click one year twice to see only that year. One-year views (distribution, exemptions, tables) use the last year chosen.</dd>
           <dt>Compare with (up to 5)</dt><dd>Adds agencies or components to the same chart; × removes one.</dd>
           <dt>Agencies added up in the total</dt><dd>All reporting agencies (71–122 a year), or only the 70 that reported all 18 years, so a total does not grow just because more agencies report.</dd></dl>
-        <p>With an agency chosen and no question, the page shows an <b>Overview</b>: the key measure of each question. Each question has three tabs:
-          <b>Chart</b>, <b>Tables</b> (the numbers in the chart, related report tables, all agencies in one year) and <b>How the comparison is made</b>.</p></section>
+        <p>With an agency chosen and no question, the page shows an <b>Overview</b>: the key measure of each question. Each question has two tabs:
+          <b>Chart</b> and <b>Tables</b> (the numbers in the chart, related report tables, all agencies in one year). Next to the tables,
+          <b>How the comparison is made</b> explains that question's numbers.</p></section>
       <section><h3>Words to know</h3>
         <dl><dt>Processed</dt><dd>Requests an agency closed during the fiscal year.</dd>
           <dt>Released in full, partly released, fully denied on exemptions</dt><dd>How a closed request ended after its records were reviewed. Many end in other ways: no records found, withdrawn, referred and more.</dd>
@@ -385,6 +386,7 @@ function storyPlaceholder(kicker) {
           <dt>Response time</dt><dd>Days from receiving a complete request to closing it.</dd>
           <dt>Appeal</dt><dd>The requester asks the agency to review its decision.</dd></dl></section>
     </div>
+    <section class="fd-rules"><h3>Rules used everywhere</h3><div class="fd-rules-body"></div></section>
     <p class="fd-keep"><b>Keep in mind.</b> Agencies fill in these reports themselves, and categories can change from year to year. foia.gov has no FY2008
       figures for 26 agencies; they appear in FY2009–10. The reports show what changed, not why. Student prototype for MuckRock
       (BU Spark! DS 701); not an official MuckRock product.</p>
@@ -411,7 +413,11 @@ function storyPlaceholder(kicker) {
       <div class="fd-open"><button type="button" class="fd-link">How to use this dashboard ↗</button></div>`;
     qh.querySelector(".fd-link").addEventListener("click", () => openGuide(card));
   }
-  const scan = () => document.querySelectorAll(".qhead:not([data-guide])").forEach(fix);
+  function rules() {
+    const src = document.querySelector(".how-rules ul"), dst = document.querySelector(".fd-rules-body");
+    if (src && dst && dst.textContent !== src.textContent) dst.replaceChildren(src.cloneNode(true));
+  }
+  const scan = () => { document.querySelectorAll(".qhead:not([data-guide])").forEach(fix); rules() };
   new MutationObserver(scan).observe(document.documentElement, {childList: true, subtree: true});
   document.addEventListener("DOMContentLoaded", scan);
 })();
