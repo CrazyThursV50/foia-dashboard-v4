@@ -185,3 +185,9 @@ html.s1m-open, html.s1m-open body { overflow: hidden; }
 .fd-clear:hover:not(:disabled) { text-decoration-color: #1f4f8a; }
 .fd-clear:disabled { color: #9aa3ae; text-decoration: none; cursor: default; }
 .fd-clear, .fd-clear:disabled { background: none !important; border: 0 !important; box-shadow: none !important; }
+
+/* top bar: who built it and for whom (2026-11-14); smaller than the dashboard's name */
+.fd-credit { font-size: 0.6em; font-weight: 400; opacity: 0.9; margin-left: 0.15rem; vertical-align: 0.12em; white-space: nowrap; }
+.fd-credit a { color: inherit !important; text-decoration: underline; text-decoration-color: rgba(255,255,255,0.55); text-underline-offset: 3px; }
+.fd-credit a:hover { text-decoration-color: #fff; }
+@media (max-width: 760px) { .fd-credit { display: none; } }
